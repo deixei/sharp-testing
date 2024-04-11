@@ -1,0 +1,56 @@
+{
+    "id": 18,
+    "name": "my_test_plan2",
+    "url": "https: //dev.azure.com/deixeicom/deixei/_apis/test/Plans/18",
+    "project": {
+        "id": "a4d4870a-749d-4332-913d-e5dbd42957e2",
+        "name": "deixei",
+        "url": "https://dev.azure.com/deixeicom/_apis/projects/deixei"
+    },
+    "area": {
+        "id": "241696",
+        "name": "deixei"
+    },
+    "description": "My test plan description2",
+    "startDate": "2024-04-01T13:15:33.173Z",
+    "endDate": "2024-04-08T13:15:33.173Z",
+    "iteration": "deixei",
+    "updatedDate": "2024-04-02T06:30:51.1833931Z",
+    "updatedBy": {
+        "displayName": "Marcio Parente da Silva",
+        "url": "https://spsprodweu3.vssps.visualstudio.com/A46050d06-0664-4723-bf3d-0666ecd673f9/_apis/Identities/06fefdea-a2a1-6b66-a560-682bb2ecb25d",
+        "_links": {
+            "avatar": {
+                "href": "https://dev.azure.com/deixeicom/_apis/GraphProfile/MemberAvatars/aad.MDZmZWZkZWEtYTJhMS03YjY2LWE1NjAtNjgyYmIyZWNiMjVk"
+            }
+        },
+        "id": "06fefdea-a2a1-6b66-a560-682bb2ecb25d",
+        "uniqueName": "marcio@deixei.com",
+        "imageUrl": "https://dev.azure.com/deixeicom/_apis/GraphProfile/MemberAvatars/aad.MDZmZWZkZWEtYTJhMS03YjY2LWE1NjAtNjgyYmIyZWNiMjVk",
+        "descriptor": "aad.MDZmZWZkZWEtYTJhMS03YjY2LWE1NjAtNjgyYmIyZWNiMjVk"
+    },
+    "owner": {
+        "displayName": "Marcio Parente da Silva",
+        "url": "https://spsprodweu3.vssps.visualstudio.com/A46050d06-0664-4723-bf3d-0666ecd673f9/_apis/Identities/06fefdea-a2a1-6b66-a560-682bb2ecb25d",
+        "_links": {
+            "avatar": {
+                "href": "https://dev.azure.com/deixeicom/_apis/GraphProfile/MemberAvatars/aad.MDZmZWZkZWEtYTJhMS03YjY2LWE1NjAtNjgyYmIyZWNiMjVk"
+            }
+        },
+        "id": "06fefdea-a2a1-6b66-a560-682bb2ecb25d",
+        "uniqueName": "marcio@deixei.com",
+        "imageUrl": "https://dev.azure.com/deixeicom/_apis/GraphProfile/MemberAvatars/aad.MDZmZWZkZWEtYTJhMS03YjY2LWE1NjAtNjgyYmIyZWNiMjVk",
+        "descriptor": "aad.MDZmZWZkZWEtYTJhMS03YjY2LWE1NjAtNjgyYmIyZWNiMjVk"
+    },
+    "revision": 1,
+    "state": "Active",
+    "rootSuite": {
+        "id": "19",
+        "name": "my_test_plan2",
+        "url": "https://dev.azure.com/deixeicom/deixei/_apis/test/Plans/18/Suites/19"
+    },
+    "clientUrl": "mtms://dev.azure.com:443/deixeicom/p:deixei/Testing/testplan/connect?id=18",
+    "testOutcomeSettings": {
+        "syncOutcomeAcrossSuites": False
+    }
+}
