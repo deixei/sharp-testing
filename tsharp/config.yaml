@@ -20,6 +20,7 @@ test_plans:
     - configuration:
         name: my_config
       description: My test case description
+      id: 26
       name: my_test_case
       steps:
       - command: echo 'Hello, World!'
@@ -39,10 +40,12 @@ test_plans:
     - configuration:
         name: my_config
       description: My test case description
+      id: 27
       name: my_test_case_2
     - configuration:
         name: my_config
       description: My test case description
+      id: 28
       name: my_test_case_3
   - description: My test suite description
     id: 25
@@ -51,10 +54,12 @@ test_plans:
     - configuration:
         name: my_config
       description: My test case description
+      id: 29
       name: my_test_case_5
     - configuration:
         name: my_config
       description: My test case description
+      id: 30
       name: my_test_case_4
 variables:
 - id: 33

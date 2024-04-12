@@ -131,13 +131,11 @@ class WorkItem:
             {
                 "op": "add",
                 "path": "/fields/System.Title",
-                "from": "",
                 "value": self.name
             },
             {
                 "op": "add",
                 "path": "/fields/System.Description",
-                "from": "",
                 "value": self.description
             }
             ]
@@ -149,7 +147,7 @@ class WorkItem:
         url = f"{self.url}/deixei/_apis/wit/wiql?api-version=7.1-preview.2"
 
         query = {
-            "query": f"Select [System.Id], [System.Title], [System.Description] From WorkItems Where [System.WorkItemType] = '{self.workitem_type}' and [System.TeamProject] = 'deixei' and [System.Title] = '{self.name}'"
+            "query": f"Select [System.Id], [System.Title], [System.Description] From WorkItems Where [System.WorkItemType] = '{self.workitem_type}' and [System.Title] = '{self.name}'"
         }
 
         response = requests.post(url, json=query, auth=('PAT', self.pat))
@@ -178,8 +176,15 @@ class WorkItem:
         return self.get_by_id()
     
     def create(self):
-        url = f"{self.url}/deixei/_apis/wit/workitems/{self.workitem_type}?api-version=5.0"
-        response = requests.post(url, auth=('PAT', self.pat), json=self.build_work_item())
+        url = f"{self.url}/deixei/_apis/wit/workitems/${self.workitem_type}?api-version=5.0"
+        json_data=self.build_work_item()
+
+        headers = {
+            "Content-Type": "application/json-patch+json"
+        }
+
+        response = requests.patch(url, auth=('PAT', self.pat), json=json_data, headers=headers)
+        
         return response.json()
     
     def update(self):
