@@ -60,7 +60,7 @@ class Main:
             test_configuration["id"] = item["id"]
 
     def set_test_folder(self, folder):
-        test_folder = os.path.join(test_workplace, folder)
+        test_folder = os.path.join(test_workplace, f"test_{folder}")
         # create the folder if it does not exist
         if not os.path.exists(test_folder):
             os.makedirs(test_folder)
@@ -68,8 +68,8 @@ class Main:
         return test_folder
     
     def set_test_file(self, folder, file):
-        test_folder = self.set_test_folder(folder)
-        test_file = os.path.join(test_folder, file)
+        ##test_folder = self.set_test_folder(folder)
+        test_file = os.path.join(folder, f"test_{file}.py")
         # create the file if it does not exist
         if not os.path.exists(test_file):
             with open(test_file, 'w') as f:
@@ -85,12 +85,13 @@ class Main:
         with open(file, 'r') as f:
             lines = f.readlines()
             for line in lines:
-                if f"def {function_name}():" in line:
+                if f"def test_{function_name}():" in line:
                     return
 
         with open(file, 'a') as f:
             f.write(f"\n")
-            f.write(f"def {function_name}():\n")
+            f.write(f"@pytest.mark.test_id({work_item['id']})\n")
+            f.write(f"def test_{function_name}():\n")
             f.write(f"\t# wi: {work_item['id']}\n")
             f.write(f"\t# tc: {test_case['description']}\n")
             f.write(f"\tprint(\"This is a test function\")\n")
@@ -117,7 +118,7 @@ class Main:
                 test_suite_name = test_suite["name"]
                 ts = test_suites.create_test_suite_if_not_exists(test_suite_name, test_suite["description"])
 
-                t = self.set_test_file(f, f"{test_suite_name}.py")
+                t = self.set_test_file(f, test_suite_name)
 
                 test_suite_id = ts["id"]
                 test_suite["id"] = test_suite_id

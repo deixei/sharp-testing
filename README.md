@@ -12,3 +12,12 @@ https://learn.microsoft.com/en-us/rest/api/azure/devops/test/configurations/crea
 # run
 
 python3 tsharp/tsharp.py
+
+
+# notes on testing stuff
+
+pytest pytest-azurepipelines
+
+pytest --doctest-modules --junitxml=junit/test-results.xml
+
+pytest test_my_test_plan2/test_my_test_suite_2.py::test_my_test_case_2 --junitxml=junit/test-results.xml

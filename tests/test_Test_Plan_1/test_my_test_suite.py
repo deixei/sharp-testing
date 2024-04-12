@@ -2,7 +2,8 @@
 import os
 import pytest
 
-def my_test_case():
+@pytest.mark.test_id(26)
+def test_my_test_case():
 	# wi: 26
 	# tc: My test case description
 	print("This is a test function")

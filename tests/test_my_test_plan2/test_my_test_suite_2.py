@@ -2,14 +2,16 @@
 import os
 import pytest
 
-def my_test_case_2():
+@pytest.mark.test_id(27)
+def test_my_test_case_2():
 	# wi: 27
 	# tc: My test case description
 	print("This is a test function")
 	assert True
 
 
-def my_test_case_3():
+@pytest.mark.test_id(28)
+def test_my_test_case_3():
 	# wi: 28
 	# tc: My test case description
 	print("This is a test function")
