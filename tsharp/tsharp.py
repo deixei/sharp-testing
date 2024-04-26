@@ -130,7 +130,8 @@ class Main:
                     test_case_id = test_case.get("id", 0)
                     work_item = WorkItem("Test Case", test_case["name"], test_case_id)
                     work_item.description = test_case.get("description", "")
-
+                    work_item.test_plan = test_plan["name"]
+                    work_item.suite_name = test_suite_name
 
 
                     work_item.get()
@@ -153,6 +154,24 @@ class WorkItem:
         self._id = id
         self._description = ""
 
+        self._plan_name = ""
+        self._suite_name = ""
+
+    @property
+    def test_plan(self):
+        return self._plan_name
+    
+    @test_plan.setter
+    def test_plan(self, value):
+        self._plan_name = value
+
+    @property
+    def suite_name(self):
+        return self._suite_name
+
+    @suite_name.setter
+    def suite_name(self, value):
+        self._suite_name = value    
 
     @property
     def id(self):
@@ -179,6 +198,21 @@ class WorkItem:
         self._description = value
 
 
+    # Associated Automation, https://learn.microsoft.com/en-us/azure/devops/boards/queries/build-test-integration?view=azure-devops#fields
+    ### test_my_test_plan2/test_my_test_suite_2.py::test_my_test_case_2
+    ## Automated test name, Microsoft.VSTS.TCM.AutomatedTestName
+    ## test_my_test_suite_2.py::test_my_test_case_2
+    @property
+    def test_function_name(self):
+        return f"{self.suite_name}::test_{self.name}"
+    ## Automated test storage, Microsoft.VSTS.TCM.AutomatedTestStorage
+    ## tests/test_my_test_plan2
+    @property
+    def test_folder(self):
+        return f"tests/test_{self.test_plan}"
+    
+    ## Automated test type, Microsoft.VSTS.TCM.AutomationStatus
+
 
     def build_work_item(self):     
         return [
@@ -191,6 +225,21 @@ class WorkItem:
                 "op": "add",
                 "path": "/fields/System.Description",
                 "value": self.description
+            },
+            {
+                "op": "add",
+                "path": "/fields/Microsoft.VSTS.TCM.AutomatedTestName",
+                "value": self.test_function_name
+            },
+            {
+                "op": "add",
+                "path": "/fields/Microsoft.VSTS.TCM.AutomatedTestStorage",
+                "value": self.test_folder
+            },
+            {
+                "op": "add",
+                "path": "/fields/Microsoft.VSTS.TCM.AutomatedTestType",
+                "value": "Automated"
             }
             ]
     
