@@ -7,12 +7,15 @@ class MainRun:
         self.run_id = os.environ.get("RUN_ID")
         self.url = os.environ.get("DX_ADO_URL")
         self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
+        self.TCMTestPropertiesJSONFile = os.environ.get("TCMTestPropertiesJSONFile")
+
         self.project = "deixei"
     
     def execute(self):
         print(f"This is a test run {self.run_id}")
         print(f"This is the url {self.url}")
         print(f"This is the pat {self.pat}")
+        print(f"This is the TCMTestPropertiesJSONFile {self.TCMTestPropertiesJSONFile}")
 
         run = self.get_run_id()
         print(run)
