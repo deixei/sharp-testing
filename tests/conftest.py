@@ -1,5 +1,5 @@
 from pytest import fixture
-
+import base64
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -9,4 +9,6 @@ def pytest_addoption(parser):
 
 @fixture()
 def ado_config(request):
-    return request.config.getoption("--ado_config")
+    encoded_value = request.config.getoption("--ado_config")
+    decoded_value = base64.b64decode(encoded_value).decode()
+    return decoded_value

@@ -1,3 +1,4 @@
+import base64
 import os
 import requests
 import argparse
@@ -73,13 +74,14 @@ class MainRun:
             print(f"configuration_id: {configuration_id}")
             config = tc.get_test_configuration(configuration_id)
             config_values = config["values"]
+            encode_config_values = base64.b64encode(config_values.encode()).decode()
             print(config_values)
 
             # invoke a pytest test function
 
             test_func_name = f"./{automatedTestStorage}/{automatedTestName}"
 
-            retcode = pytest.main(["--ado_config", config_values ,test_func_name, "--junitxml", f"junit/test-results-{test_point_id}.xml"])
+            retcode = pytest.main(["--ado_config", encode_config_values ,test_func_name, "--junitxml", f"junit/test-results-{test_point_id}.xml"])
 
             print(f"retcode: {retcode}")
 
