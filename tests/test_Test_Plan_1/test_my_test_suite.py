@@ -3,7 +3,7 @@ import os
 import pytest
 
 @pytest.mark.test_id(26)
-def test_my_test_case():
+def test_my_test_case(ado_config):
 	# wi: 26
 	# tc: My test case description
 	print("This is a test function")

@@ -1,13 +1,22 @@
 import os
 import requests
+import argparse
+from tsharp import TestConfigurations, TestVariables
+import pytest
 
 class MainRun:
 
-    def __init__(self):
-        self.run_id = os.environ.get("RUN_ID")
+    def __init__(self, run_id):
+        self.run_id = run_id
         self.url = os.environ.get("DX_ADO_URL")
         self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-        self.TCMTestPropertiesJSONFile = os.environ.get("__TCMTestPropertiesJSONFile__")
+        
+        if self.url is None:
+            raise ValueError("DX_ADO_URL is not set")
+        if self.pat is None:
+            raise ValueError("AZURE_DEVOPS_EXT_PAT is not set")
+        if self.run_id is None:
+            raise ValueError("RUN_ID is not set")
 
         self.project = "deixei"
     
@@ -15,7 +24,6 @@ class MainRun:
         print(f"This is a test run {self.run_id}")
         print(f"This is the url {self.url}")
         print(f"This is the pat {self.pat}")
-        print(f"This is the TCMTestPropertiesJSONFile {self.TCMTestPropertiesJSONFile}")
 
         run = self.get_run_id()
         print(run)
@@ -46,13 +54,44 @@ class MainRun:
             return
         if results["count"] == 0:
             return
-        for result in results.value:
-            print(result["automatedTestStorage"])
-            print(result["automatedTestName"])
-            print(result["automatedTestType"])
-            print(result["id"])
-            print(result["testPoint"]["id"])
+        
+        tc = TestConfigurations()
+        for result in results["value"]:
+            test_point_id = result["testPoint"]["id"]
+            automatedTestStorage = result["automatedTestStorage"]
+            automatedTestName = result["automatedTestName"]
+            automatedTestType = result["automatedTestType"]
+            id = result["id"]
+            
+            print(automatedTestStorage)
+            print(automatedTestName)
+            print(automatedTestType)
+            print(id)
+
+            print(test_point_id)
+            configuration_id = result["configuration"]["id"]
+            print(f"configuration_id: {configuration_id}")
+            config = tc.get_test_configuration(configuration_id)
+            config_values = config["values"]
+            print(config_values)
+
+            # invoke a pytest test function
+
+            test_func_name = f"./{automatedTestStorage}/{automatedTestName}"
+
+            retcode = pytest.main(["--ado_config", config_values ,test_func_name, "--junitxml", f"junit/test-results-{test_point_id}.xml"])
+
+            print(f"retcode: {retcode}")
+
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--run_id', default=os.environ.get('RUN_ID'))
+    args = parser.parse_args()
+
+    test_execution_engine = MainRun(args.run_id)
+    test_execution_engine.execute()
 
 if __name__ == "__main__":
-    main = MainRun()
-    main.execute()
+    main()

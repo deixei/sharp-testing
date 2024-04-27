@@ -20,4 +20,4 @@ pytest pytest-azurepipelines
 
 pytest --doctest-modules --junitxml=junit/test-results.xml
 
-pytest test_my_test_plan2/test_my_test_suite_2.py::test_my_test_case_2 --junitxml=junit/test-results.xml
+pytest test_my_test_plan2/test_my_test_suite_2.py::test_my_test_case_3 --junitxml=junit/test-results.xml

@@ -91,7 +91,7 @@ class Main:
         with open(file, 'a') as f:
             f.write(f"\n")
             f.write(f"@pytest.mark.test_id({work_item['id']})\n")
-            f.write(f"def test_{function_name}():\n")
+            f.write(f"def test_{function_name}(ado_config):\n")
             f.write(f"\t# wi: {work_item['id']}\n")
             f.write(f"\t# tc: {test_case['description']}\n")
             f.write(f"\tprint(\"This is a test function\")\n")
@@ -204,7 +204,7 @@ class WorkItem:
     ## test_my_test_suite_2.py::test_my_test_case_2
     @property
     def test_function_name(self):
-        return f"{self.suite_name}::test_{self.name}"
+        return f"test_{self.suite_name}.py::test_{self.name}"
     ## Automated test storage, Microsoft.VSTS.TCM.AutomatedTestStorage
     ## tests/test_my_test_plan2
     @property
