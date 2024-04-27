@@ -16,6 +16,18 @@ def test_my_test_case_3(ado_config):
 	# tc: My test case description
 	print("This is a test function")
 	print(f"test_print_name_3(name): {ado_config}")
-	#print(f"test_print_name_2(name): {pytestconfig.getoption('name')}")
-	assert True
+	
+	for config_item in ado_config:
+		name = config_item["name"]
+		value = config_item["value"]
+
+		print(f"{name}: {value}")
+
+		if name == "my_var":
+			assert value == "my_value"
+
+		if name == "my_var2":
+			assert value == "my_value3"
+
+	
 
