@@ -44,13 +44,14 @@ class MainRun:
     def iterate_test_results(self, results):
         if results is None:
             return
-        if results.count == 0:
+        if results["count"] == 0:
             return
         for result in results.value:
-            print(result.automatedTestStorage)
-            print(result.automatedTestName)
-            print(result.automatedTestType)
-            print(result.id)
+            print(result["automatedTestStorage"])
+            print(result["automatedTestName"])
+            print(result["automatedTestType"])
+            print(result["id"])
+            print(result["testPoint"]["id"])
 
 if __name__ == "__main__":
     main = MainRun()
