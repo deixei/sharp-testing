@@ -4,6 +4,7 @@ import requests
 import argparse
 from tsharp import TestConfigurations, TestVariables
 import pytest
+import json
 
 class MainRun:
 
@@ -74,7 +75,7 @@ class MainRun:
             print(f"configuration_id: {configuration_id}")
             config = tc.get_test_configuration(configuration_id)
             config_values = config["values"]
-            encode_config_values = base64.b64encode(config_values.encode()).decode()
+            encode_config_values = encode_list(config_values)
             print(config_values)
 
             # invoke a pytest test function
@@ -86,6 +87,10 @@ class MainRun:
             print(f"retcode: {retcode}")
 
 
+def encode_list(list_values):
+    json_string = json.dumps(list_values)
+    encoded_string = base64.b64encode(json_string.encode()).decode()
+    return encoded_string
 
 def main():
     parser = argparse.ArgumentParser()
