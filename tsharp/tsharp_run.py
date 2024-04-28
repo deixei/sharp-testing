@@ -7,6 +7,11 @@ from tsharp import TestConfigurations, TestVariables
 import pytest
 import json
 
+
+class TSharpPyTestPlugin:
+    def pytest_sessionfinish(self):
+        print("*** test run reporting finishing")
+
 class MainRun:
 
     def __init__(self, run_id):
@@ -52,7 +57,7 @@ class MainRun:
 
         return data
     
-    def complete_test_run(self, run_id, test_result_id, planId, test_point_id, test_case_id, output_file):
+    def complete_test_run(self, run_id, test_result_id, planId, test_point_id, test_case_id, output_file, retcode):
         url = f"{self.url}/{self.project}/_apis/test/runs/{run_id}/results?api-version=7.1-preview.6"
         current_time = datetime.now().isoformat()
         # outcome	string
@@ -62,16 +67,22 @@ class MainRun:
         with open(output_file, "r") as file:
             content = file.read()
 
+        print(content)
 
-
+        if retcode == 0:
+            outcome = "Passed",
+            errorMessage = "No errors"
+        else:
+            outcome = "Failed"
+            errorMessage = content
 
         data = [{
             "id": test_result_id,
             "comment": "Test run completed",
             "state": "Completed",
             "completedDate": current_time,
-            "errorMessage": "No errors",
-            "outcome": "Passed",
+            "errorMessage": errorMessage,
+            "outcome": outcome,
             "testPoint": {
                 "id": test_point_id
             },
@@ -136,11 +147,9 @@ class MainRun:
 
                 print(f"Test Function Name: {test_func_name}; Output File: {output_file}")
 
-                retcode = pytest.main(["-s", "--ado_config", encode_config_values ,test_func_name, "--junitxml", output_file])
+                retcode = pytest.main(["-s", "--ado_config", encode_config_values ,test_func_name, "--junitxml", output_file], plugins=[TSharpPyTestPlugin()])
 
-                print(f"retcode: {retcode}")
-
-                u1 = self.complete_test_run(self.run_id, id, planId, test_point_id, test_case_id, output_file)
+                u1 = self.complete_test_run(self.run_id, id, planId, test_point_id, test_case_id, output_file, retcode)
                 print(u1)
 
 

@@ -29,5 +29,7 @@ def test_my_test_case_3(ado_config):
 		if name == "my_var2":
 			assert value == "my_value3"
 
+
+		assert value != "Windows 10"
 	
 
