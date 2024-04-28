@@ -1,0 +1,98 @@
+{
+    "id": 1000215,
+    "name": "OnDemandTestRun 27/04/2024, 13:33:49",
+    "url": "https://dev.azure.com/deixeicom/deixei/_apis/test/Runs/1000215",
+    "build": {
+        "id": "484",
+        "name": "20240427.2",
+        "url": "https://dev.azure.com/deixeicom/_apis/build/Builds/484"
+    },
+    "buildConfiguration": {
+        "id": 484,
+        "number": "20240427.2",
+        "uri": "vstfs:///Build/Build/484",
+        "flavor": "",
+        "platform": "",
+        "buildDefinitionId": 20,
+        "branchName": "refs/heads/main",
+        "project": {
+            "name": "deixei"
+        },
+        "targetBranchName": ""
+    },
+    "isAutomated": True,
+    "iteration": "deixei",
+    "owner": {
+        "displayName": "Marcio Parente da Silva",
+        "url": "https://spsprodweu3.vssps.visualstudio.com/A46050d06-0664-4723-bf3d-0666ecd673f9/_apis/Identities/06fefdea-a2a1-6b66-a560-682bb2ecb25d",
+        "_links": {
+            "avatar": {
+                "href": "https://dev.azure.com/deixeicom/_apis/GraphProfile/MemberAvatars/aad.MDZmZWZkZWEtYTJhMS03YjY2LWE1NjAtNjgyYmIyZWNiMjVk"
+            }
+        },
+        "id": "06fefdea-a2a1-6b66-a560-682bb2ecb25d",
+        "uniqueName": "marcio@deixei.com",
+        "imageUrl": "https://dev.azure.com/deixeicom/_apis/GraphProfile/MemberAvatars/aad.MDZmZWZkZWEtYTJhMS03YjY2LWE1NjAtNjgyYmIyZWNiMjVk",
+        "descriptor": "aad.MDZmZWZkZWEtYTJhMS03YjY2LWE1NjAtNjgyYmIyZWNiMjVk"
+    },
+    "project": {
+        "id": "a4d4870a-749d-4332-913d-e5dbd42957e2",
+        "name": "deixei"
+    },
+    "state": "NotStarted",
+    "plan": {
+        "id": "18",
+        "name": "my_test_plan2",
+        "url": "https://dev.azure.com/deixeicom/deixei/_apis/test/Plans/18"
+    },
+    "postProcessState": "Complete",
+    "totalTests": 4,
+    "incompleteTests": 4,
+    "notApplicableTests": 0,
+    "passedTests": 0,
+    "unanalyzedTests": 0,
+    "createdDate": "2024-04-27T11:33:49.397Z",
+    "lastUpdatedDate": "2024-04-27T11:33:50.073Z",
+    "lastUpdatedBy": {
+        "displayName": "Marcio Parente da Silva",
+        "url": "https://spsprodweu3.vssps.visualstudio.com/A46050d06-0664-4723-bf3d-0666ecd673f9/_apis/Identities/06fefdea-a2a1-6b66-a560-682bb2ecb25d",
+        "_links": {
+            "avatar": {
+                "href": "https://dev.azure.com/deixeicom/_apis/GraphProfile/MemberAvatars/aad.MDZmZWZkZWEtYTJhMS03YjY2LWE1NjAtNjgyYmIyZWNiMjVk"
+            }
+        },
+        "id": "06fefdea-a2a1-6b66-a560-682bb2ecb25d",
+        "uniqueName": "marcio@deixei.com",
+        "imageUrl": "https://dev.azure.com/deixeicom/_apis/GraphProfile/MemberAvatars/aad.MDZmZWZkZWEtYTJhMS03YjY2LWE1NjAtNjgyYmIyZWNiMjVk",
+        "descriptor": "aad.MDZmZWZkZWEtYTJhMS03YjY2LWE1NjAtNjgyYmIyZWNiMjVk"
+    },
+    "revision": 2,
+    "releaseUri": "vstfs:///ReleaseManagement/Release/115",
+    "releaseEnvironmentUri": "vstfs:///ReleaseManagement/Environment/115",
+    "release": {
+        "id": 115,
+        "name": "Release-12",
+        "environmentId": 115,
+        "environmentName": "vstfs:///ReleaseManagement/Environment/115",
+        "definitionId": 3,
+        "environmentDefinitionId": 3,
+        "environmentDefinitionName": None,
+        "creationDate": "2024-04-27T11:33:49.737Z",
+        "environmentCreationDate": "2024-04-27T11:33:50.0128113Z"
+    },
+    "runStatistics": [
+        {
+            "state": "Unspecified",
+            "outcome": "None",
+            "count": 4
+        }
+    ],
+    "webAccessUrl": "https://dev.azure.com/deixeicom/deixei/_TestManagement/Runs?runId=1000215&_a=runCharts",
+    "pipelineReference": {
+        "pipelineId": 484,
+        "stageReference": {},
+        "phaseReference": {},
+        "jobReference": {},
+        "pipelineDefinitionId": 20
+    }
+}

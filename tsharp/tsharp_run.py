@@ -1,4 +1,5 @@
 import base64
+from datetime import datetime
 import os
 import requests
 import argparse
@@ -28,7 +29,7 @@ class MainRun:
         print(f"This is the pat {self.pat}")
 
         run = self.get_run_id()
-        print(run)
+        #print(run)
 
         results = self.get_test_results()
         print(results)
@@ -51,6 +52,47 @@ class MainRun:
 
         return data
     
+    def complete_test_run(self, run_id, test_result_id, planId, test_point_id, test_case_id, output_file):
+        url = f"{self.url}/{self.project}/_apis/test/runs/{run_id}/results?api-version=7.1-preview.6"
+        current_time = datetime.now().isoformat()
+        # outcome	string
+        # Test outcome of test result. Valid values = (Unspecified, None, Passed, Failed, Inconclusive, Timeout, Aborted, Blocked, NotExecuted, Warning, Error, NotApplicable, Paused, InProgress, NotImpacted)
+        
+        # read xml file output_file
+        with open(output_file, "r") as file:
+            content = file.read()
+
+
+
+
+        data = [{
+            "id": test_result_id,
+            "comment": "Test run completed",
+            "state": "Completed",
+            "completedDate": current_time,
+            "errorMessage": "No errors",
+            "outcome": "Passed",
+            "testPoint": {
+                "id": test_point_id
+            },
+            "testPlan": {
+                "id": planId
+            },
+            "testRun": {
+                "id": run_id
+            },
+            "testCase": {
+                "id": test_case_id
+            }
+
+        }]
+
+        response = requests.patch(url, auth=('PAT', self.pat), json=data)
+        data = response.json()
+
+        return data
+
+
     def iterate_test_results(self, results):
         if results is None:
             return
@@ -59,32 +101,48 @@ class MainRun:
         
         tc = TestConfigurations()
         for result in results["value"]:
+            id = result["id"]
             test_point_id = result["testPoint"]["id"]
+            planId = result["testPlan"]["id"]
+
             automatedTestStorage = result["automatedTestStorage"]
             automatedTestName = result["automatedTestName"]
             automatedTestType = result["automatedTestType"]
-            id = result["id"]
+            #print(result)
+            test_case_id =  result["testCase"]["id"]
+
+            print(f"Storage: {automatedTestStorage}; Name: {automatedTestName}; Type: {automatedTestType}")
+
+            if automatedTestType != "Automated":
+                print("Test Type is not Automated")
+                continue
+            else:
+                print("Test Type is Automated")
+                print("Id:", id)
+
+                print("Test Point:", test_point_id)
+                configuration_id = result["configuration"]["id"]
+                config = tc.get_test_configuration(configuration_id)
+                config_values = config["values"]
+                encode_config_values = encode_list(config_values)
             
-            print(automatedTestStorage)
-            print(automatedTestName)
-            print(automatedTestType)
-            print(id)
+                print(f"Configuration (id:{configuration_id}): ", config_values)
 
-            print(test_point_id)
-            configuration_id = result["configuration"]["id"]
-            print(f"configuration_id: {configuration_id}")
-            config = tc.get_test_configuration(configuration_id)
-            config_values = config["values"]
-            encode_config_values = encode_list(config_values)
-            print(config_values)
+                # invoke a pytest test function
 
-            # invoke a pytest test function
+                test_func_name = f"./{automatedTestStorage}/{automatedTestName}"
+                
+                output_file = f"junit/test-results-{test_point_id}.xml"
 
-            test_func_name = f"./{automatedTestStorage}/{automatedTestName}"
+                print(f"Test Function Name: {test_func_name}; Output File: {output_file}")
 
-            retcode = pytest.main(["--ado_config", encode_config_values ,test_func_name, "--junitxml", f"junit/test-results-{test_point_id}.xml"])
+                retcode = pytest.main(["-s", "--ado_config", encode_config_values ,test_func_name, "--junitxml", output_file])
 
-            print(f"retcode: {retcode}")
+                print(f"retcode: {retcode}")
+
+                u1 = self.complete_test_run(self.run_id, id, planId, test_point_id, test_case_id, output_file)
+                print(u1)
+
 
 
 def encode_list(list_values):
