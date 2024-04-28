@@ -6,7 +6,7 @@ import argparse
 from tsharp import TestConfigurations, TestVariables
 import pytest
 import json
-
+import xml.etree.ElementTree as ET
 
 class TSharpPyTestPlugin:
     def pytest_sessionfinish(self):
@@ -64,10 +64,20 @@ class MainRun:
         # Test outcome of test result. Valid values = (Unspecified, None, Passed, Failed, Inconclusive, Timeout, Aborted, Blocked, NotExecuted, Warning, Error, NotApplicable, Paused, InProgress, NotImpacted)
         
         # read xml file output_file
-        with open(output_file, "r") as file:
+        current_path_for_this_file = os.path.dirname(os.path.realpath(__file__))
+        output_file_full_path = os.path.join(current_path_for_this_file, "..", output_file)
+        with open(output_file_full_path, "r") as file:
             content = file.read()
 
         print(content)
+
+        tree = ET.parse(output_file_full_path)
+        root = tree.getroot()
+
+        for child in root:
+            print(child.tag, child.attrib)
+            for sub_child in child:
+                print(sub_child.tag, sub_child.attrib)
 
         if retcode == 0:
             outcome = "Passed",
