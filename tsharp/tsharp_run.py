@@ -8,36 +8,46 @@ import pytest
 import json
 import xml.etree.ElementTree as ET
 
+VERBOSE = True
+
+def verbose_print(message):
+    if VERBOSE == True:
+        print(message)
+
+
 class TSharpPyTestPlugin:
     def pytest_sessionfinish(self):
-        print("*** test run reporting finishing")
+        verbose_print("*** [TSharpPyTestPlugin]: test run reporting finishing")
 
 class MainRun:
 
     def __init__(self, run_id):
         self.run_id = run_id
+
         self.url = os.environ.get("DX_ADO_URL")
         self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
         
         if self.url is None:
             raise ValueError("DX_ADO_URL is not set")
+        
         if self.pat is None:
             raise ValueError("AZURE_DEVOPS_EXT_PAT is not set")
+        
         if self.run_id is None:
             raise ValueError("RUN_ID is not set")
 
         self.project = "deixei"
     
     def execute(self):
-        print(f"This is a test run {self.run_id}")
-        print(f"This is the url {self.url}")
-        print(f"This is the pat {self.pat}")
+        #verbose_print(f"This is a test run {self.run_id}")
+        #verbose_print(f"This is the url {self.url}")
+        #verbose_print(f"This is the pat {self.pat}")
 
         run = self.get_run_id()
-        #print(run)
+        #verbose_print(run)
 
         results = self.get_test_results()
-        print(results)
+        #verbose_print(results)
 
         self.iterate_test_results(results)
 
@@ -69,26 +79,41 @@ class MainRun:
         with open(output_file_full_path, "r") as file:
             content = file.read()
 
-        print(content)
+        #verbose_print(content)
 
         tree = ET.parse(output_file_full_path)
         root = tree.getroot()
 
-        for child in root:
-            print(child.tag, child.attrib)
-            for sub_child in child:
-                print(sub_child.tag, sub_child.attrib)
+        ts_element = root.find("testsuite")
+        #verbose_print(ts_element.attrib)
+
+        tc_element = ts_element.find("testcase")
+        #verbose_print(tc_element.attrib)
+
+
 
         if retcode == 0:
             outcome = "Passed",
             errorMessage = "No errors"
+            comment = "Test run completed by TSharp-Test-Runner"
         else:
             outcome = "Failed"
-            errorMessage = content
+
+            failure_element = tc_element.find("failure")
+            if failure_element is not None:
+                #verbose_print(failure_element.attrib)
+                #verbose_print(failure_element.text)
+
+                errorMessage = failure_element.text
+                comment = failure_element.attrib["message"]
+            else:
+                errorMessage = "No error message found"
+                comment = "Test run failed"
+            
 
         data = [{
             "id": test_result_id,
-            "comment": "Test run completed",
+            "comment": comment,
             "state": "Completed",
             "completedDate": current_time,
             "errorMessage": errorMessage,
@@ -132,22 +157,19 @@ class MainRun:
             #print(result)
             test_case_id =  result["testCase"]["id"]
 
-            print(f"Storage: {automatedTestStorage}; Name: {automatedTestName}; Type: {automatedTestType}")
+            #verbose_print(f"Storage: {automatedTestStorage}; Name: {automatedTestName}; Type: {automatedTestType}")
 
             if automatedTestType != "Automated":
                 print("Test Type is not Automated")
                 continue
             else:
                 print("Test Type is Automated")
-                print("Id:", id)
-
-                print("Test Point:", test_point_id)
                 configuration_id = result["configuration"]["id"]
                 config = tc.get_test_configuration(configuration_id)
                 config_values = config["values"]
                 encode_config_values = encode_list(config_values)
             
-                print(f"Configuration (id:{configuration_id}): ", config_values)
+                #verbose_print(f"Configuration (id:{configuration_id}): ", config_values)
 
                 # invoke a pytest test function
 
@@ -155,12 +177,13 @@ class MainRun:
                 
                 output_file = f"junit/test-results-{test_point_id}.xml"
 
-                print(f"Test Function Name: {test_func_name}; Output File: {output_file}")
+                #verbose_print(f"Test Function Name: {test_func_name}; Output File: {output_file}")
 
                 retcode = pytest.main(["-s", "--ado_config", encode_config_values ,test_func_name, "--junitxml", output_file], plugins=[TSharpPyTestPlugin()])
 
                 u1 = self.complete_test_run(self.run_id, id, planId, test_point_id, test_case_id, output_file, retcode)
-                print(u1)
+                print("complete_test_run:", u1)
+
 
 
 

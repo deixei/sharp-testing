@@ -33,3 +33,19 @@ def test_my_test_case_3(ado_config):
 		assert value != "Windows 10"
 	
 
+
+@pytest.mark.test_id(27)
+def test_my_test_case_2(ado_config):
+	# wi: 27
+	# tc: My test case description
+	print("This is a test function")
+	assert True
+
+
+@pytest.mark.test_id(28)
+def test_my_test_case_3(ado_config):
+	# wi: 28
+	# tc: My test case description
+	print("This is a test function")
+	assert True
+

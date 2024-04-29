@@ -228,6 +228,11 @@ class WorkItem:
             },
             {
                 "op": "add",
+                "path": "/fields/Microsoft.VSTS.TCM.automatedTestId",
+                "value": self.test_function_name
+            },
+            {
+                "op": "add",
                 "path": "/fields/Microsoft.VSTS.TCM.AutomatedTestName",
                 "value": self.test_function_name
             },
