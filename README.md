@@ -1,4 +1,42 @@
-# Introduction 
+# Sharp Testing Framework
+Sharpe Testing is an open source framework for defining test plans, test suites and test cases in YAML format. It also allows defining different configurations and configuration variables for testing. The framework integrates with Azure DevOps Testing hub by generating the required work items, and generates pytest files linked to the test cases. It takes advantage of the pytest framework and uploads the execution report.
+
+## Installation
+You can install Sharp Testing using this repo:
+
+Clone me and adapt the CI pipeline
+
+## Usage
+CLI
+
+The helper command for Sharpe Testing is tsharp. You can use it to create a new test plan, test suite or test case:
+
+python3 tsharp/tsharp.py
+
+You can also use the tsharp command to run tests:
+
+python3 tsharp/tsharp_run.py --run_id 1000215
+
+## Azure DevOps Integration
+The Sharpe Testing framework integrates with Azure DevOps Testing hub. It generates the required work items for testing. You can use the tsharp_run runner in Azure DevOps to run tests.
+
+## YAML Configuration
+The Sharpe Testing framework allows defining test plans, test suites and test cases in YAML format. You can define different configurations and configuration variables for testing. Here is an example of a test plan YAML file:
+
+```yaml
+name: My Test Plan
+description: This is my test plan
+...
+```
+
+## License
+Sharpe Testing is licensed under the MIT License. See the LICENSE file for more information.
+
+
+
+## Introduction 
+
+Based in Python, YAML, PyTest and Azure DevOps
 
 Need a command to upload a test case id with a function
 
