@@ -76,10 +76,6 @@ class MainRun:
         # read xml file output_file
         current_path_for_this_file = os.path.dirname(os.path.realpath(__file__))
         output_file_full_path = os.path.join(current_path_for_this_file, "..", output_file)
-        with open(output_file_full_path, "r") as file:
-            content = file.read()
-
-        #verbose_print(content)
 
         tree = ET.parse(output_file_full_path)
         root = tree.getroot()
@@ -90,10 +86,13 @@ class MainRun:
         tc_element = ts_element.find("testcase")
         #verbose_print(tc_element.attrib)
 
+        comment = "Nothing"
+        errorMessage = "Nothing"
+        outcome = "Failed"
 
 
         if retcode == 0:
-            outcome = "Passed",
+            outcome = "Passed"
             errorMessage = "No errors"
             comment = "Test run completed by TSharp-Test-Runner"
         else:
@@ -130,10 +129,35 @@ class MainRun:
             "testCase": {
                 "id": test_case_id
             }
-
         }]
-
+        #print("Data: ", data)
         response = requests.patch(url, auth=('PAT', self.pat), json=data)
+        data = response.json()
+
+        ## data = {'$id': '1', 'innerException': None, 'message': 'Value cannot be null.\r\nParameter name: results', 'typeName': 'Microsoft.VisualStudio.Services.Common.VssServiceException, Microsoft.VisualStudio.Services.Common', 'typeKey': 'VssServiceException', 'errorCode': 0, 'eventId': 3000}
+        ## handle the response data when there is an error indicated bz the $id=1
+
+        id = data.get("$id", None)
+        if id is not None:
+            print("Error: ", data["message"])
+
+        attachment_res = self.add_test_result_attachment(run_id, test_result_id, output_file, "junit-test-results.xml" ,comment)
+
+        print(attachment_res)
+
+        return data
+
+    def add_test_result_attachment(self, run_id, test_result_id, attachment_file, attachment_filename, comment):
+        url = f"{self.url}/{self.project}/_apis/test/runs/{run_id}/results/{test_result_id}/attachments?api-version=7.1-preview.1"
+
+        data = {
+            "stream": base64.b64encode(open(attachment_file, "rb").read()).decode(),
+            "fileName": attachment_filename,
+            "comment": comment,
+            "attachmentType": "GeneralAttachment"
+        }
+
+        response = requests.post(url, auth=('PAT', self.pat), json=data)
         data = response.json()
 
         return data
@@ -182,6 +206,9 @@ class MainRun:
                 retcode = pytest.main(["-s", "--ado_config", encode_config_values ,test_func_name, "--junitxml", output_file], plugins=[TSharpPyTestPlugin()])
 
                 u1 = self.complete_test_run(self.run_id, id, planId, test_point_id, test_case_id, output_file, retcode)
+
+                
+
                 print("complete_test_run:", u1)
 
 

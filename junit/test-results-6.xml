@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="my_suite" errors="0" failures="0" skipped="0" tests="1" time="0.008" timestamp="2024-04-30T08:20:25.049508" hostname="dx2023"><testcase classname="test_my_test_plan2.test_my_test_suite_3" name="test_my_test_case_4" time="0.000" /></testsuite></testsuites>
