@@ -85,16 +85,34 @@ class Main:
         with open(file, 'r') as f:
             lines = f.readlines()
             for line in lines:
-                if f"def test_{function_name}():" in line:
+                if f"def test_{function_name}(" in line:
                     return
 
         with open(file, 'a') as f:
             f.write(f"\n")
             f.write(f"@pytest.mark.test_id({work_item['id']})\n")
-            f.write(f"def test_{function_name}(ado_config):\n")
-            f.write(f"\t# wi: {work_item['id']}\n")
-            f.write(f"\t# tc: {test_case['description']}\n")
-            f.write(f"\tprint(\"This is a test function\")\n")
+            f.write(f"def test_{function_name}(ado_config, test_run_id, test_result_id):\n")
+
+            f.write(f"\t\"\"\"\n")
+            f.write(f"\t{test_case['description']}\n")
+            f.write(f"\tDetails:{test_case}\n")
+            f.write(f"\n")
+            f.write(f"\tArgs:\n")
+            f.write(f"\t\tado_config: The ADO configuration.\n")
+            f.write(f"\t\ttest_run_id: The ID of the test run.\n")
+            f.write(f"\t\ttest_result_id: The ID of the test result.\n")
+            f.write(f"\n")
+            f.write(f"\tReturns:\n")
+            f.write(f"\t\tNone\n")
+            f.write(f"\t\"\"\"\n")
+
+            f.write(f"\twork_item_id={work_item['id']}\n")
+            f.write(f"\ttest_case_description=\"{test_case['description']}\"\n")
+
+            f.write(f"\tprint(\"ado_config:\", ado_config)\n")
+            f.write(f"\tprint(\"test_run_id:\", test_run_id)\n")
+            f.write(f"\tprint(\"test_result_id:\", test_result_id)\n")
+            
             f.write(f"\tassert True\n")
             f.write(f"\n")
 

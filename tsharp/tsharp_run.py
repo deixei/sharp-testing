@@ -203,7 +203,15 @@ class MainRun:
 
                 #verbose_print(f"Test Function Name: {test_func_name}; Output File: {output_file}")
 
-                retcode = pytest.main(["-s", "--ado_config", encode_config_values ,test_func_name, "--junitxml", output_file], plugins=[TSharpPyTestPlugin()])
+                retcode = pytest.main([
+                    "-s", 
+                    test_func_name, 
+                    "--junitxml", output_file,
+                    "--ado_config", encode_config_values,
+                    "--test_run_id", f"{self.run_id}",
+                    "--test_result_id", f"{id}"
+                    ], 
+                    plugins=[TSharpPyTestPlugin()])
 
                 u1 = self.complete_test_run(self.run_id, id, planId, test_point_id, test_case_id, output_file, retcode)
 
