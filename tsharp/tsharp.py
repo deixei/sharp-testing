@@ -4,10 +4,13 @@ import yaml
 
 test_workplace = "/home/marcio/repos/deixei/sharp-testing/tests"
 
+target_ado_project = "deixei" ## /{self.project}/
+
 class Main:
     def __init__(self):
         self.url = os.environ.get("DX_ADO_URL")
         self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
+        self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
         self.config = self.load_yaml_config()
 
         self.update_variables()
@@ -167,6 +170,8 @@ class WorkItem:
     def __init__(self, workitem_type, name, id=0):
         self.url = os.environ.get("DX_ADO_URL")
         self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
+        self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
+        
         self.workitem_type = workitem_type
         self._name = name
         self._id = id
@@ -336,6 +341,8 @@ class WorkItems:
     def __init__(self, workitem_type):
         self.url = os.environ.get("DX_ADO_URL")
         self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
+        self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
+        
         self.workitem_type = workitem_type
 
     def get_all_work_items(self):
@@ -405,11 +412,7 @@ class TestPlans:
     def __init__(self):
         self.url = os.environ.get("DX_ADO_URL")
         self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-
-        
-
-
- 
+        self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
 
     def get_test_plans(self):
         url = f"{self.url}/deixei/_apis/test/plans?api-version=5.0"
@@ -480,6 +483,7 @@ class TestVariables:
     def __init__(self):
         self.url = os.environ.get("DX_ADO_URL")
         self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
+        self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
 
     def get_test_variables(self):
         url = f"{self.url}/deixei/_apis/test/variables?api-version=5.0-preview.1"
