@@ -38,7 +38,8 @@ class MainRun:
         if self.run_id is None:
             raise ValueError("RUN_ID is not set")
 
-        self.project = "deixei"
+        if self.project is None:
+            raise ValueError("AZURE_DEVOPS_EXT_PROJECT is not set")
     
     def execute(self):
         #verbose_print(f"This is a test run {self.run_id}")

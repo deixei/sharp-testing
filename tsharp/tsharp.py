@@ -12,7 +12,8 @@ class Main:
         self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
         self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
         self.config = self.load_yaml_config()
-
+        
+        # TODO: param to control the execution
         self.update_variables()
         self.update_configurations()
         self.update_test_plans()
@@ -275,7 +276,7 @@ class WorkItem:
     
     def get_by_name(self):
         # get all work items of type TestCase
-        url = f"{self.url}/deixei/_apis/wit/wiql?api-version=7.1-preview.2"
+        url = f"{self.url}/{self.project}/_apis/wit/wiql?api-version=7.1-preview.2"
 
         query = {
             "query": f"Select [System.Id], [System.Title], [System.Description] From WorkItems Where [System.WorkItemType] = '{self.workitem_type}' and [System.Title] = '{self.name}'"
@@ -286,13 +287,14 @@ class WorkItem:
 
         if data["workItems"]:
             self.id = data["workItems"][0]["id"]
-            self.name = data["workItems"][0]["fields"]["System.Title"]
-            self.description = data["workItems"][0]["fields"]["System.Description"]
+            #TODO: this can be a bug with invalide charecters
+            #self.name = data["workItems"][0]["fields"]["System.Title"]
+            #self.description = data["workItems"][0]["fields"]["System.Description"]
 
         return data
 
     def get_by_id(self):
-        url = f"{self.url}/deixei/_apis/wit/workitems/{self.id}?api-version=5.0&$expand=all"
+        url = f"{self.url}/{self.project}/_apis/wit/workitems/{self.id}?api-version=5.0&$expand=all"
         response = requests.get(url, auth=('PAT', self.pat))
         data = response.json()
         if data:
@@ -307,7 +309,7 @@ class WorkItem:
         return self.get_by_id()
     
     def create(self):
-        url = f"{self.url}/deixei/_apis/wit/workitems/${self.workitem_type}?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/wit/workitems/${self.workitem_type}?api-version=5.0"
         json_data=self.build_work_item()
 
         headers = {
@@ -316,10 +318,11 @@ class WorkItem:
 
         response = requests.patch(url, auth=('PAT', self.pat), json=json_data, headers=headers)
         
-        return response.json()
+        response_data = response.json()
+        return response_data
     
     def update(self):
-        url = f"{self.url}/deixei/_apis/wit/workitems/{self.id}?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/wit/workitems/{self.id}?api-version=5.0"
 
         json_data=self.build_work_item()
 
@@ -329,7 +332,8 @@ class WorkItem:
 
         response = requests.patch(url, auth=('PAT', self.pat), json=json_data, headers=headers)
 
-        return response.json()
+        response_data = response.json()
+        return response_data
     
     def create_if_not_exists(self):
         if self.id != 0:
@@ -347,14 +351,15 @@ class WorkItems:
 
     def get_all_work_items(self):
         # get all work items of type TestCase
-        url = f"{self.url}/deixei/_apis/wit/wiql?api-version=7.1-preview.2"
+        url = f"{self.url}/{self.project}/_apis/wit/wiql?api-version=7.1-preview.2"
 
         query = {
             "query": f"Select [System.Id], [System.Title] From WorkItems Where [System.WorkItemType] = '{self.workitem_type}'"
         }
 
         response = requests.post(url, json=query, auth=('PAT', self.pat))
-        return response.json()
+        response_data = response.json()
+        return response_data
 
 
         
@@ -368,30 +373,38 @@ class TestSuites:
         self.parent_suite_id = parent_suite_id
 
     def get_test_suites(self):
-        url = f"{self.url}/deixei/_apis/test/plans/{self.test_plan_id}/suites?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/test/plans/{self.test_plan_id}/suites?api-version=5.0"
         response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
+        response_data = response.json()
+        return response_data
     
     def create_test_suite(self, name, description):
-        url = f"{self.url}/deixei/_apis/test/plans/{self.test_plan_id}/suites/{self.parent_suite_id}/?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/test/plans/{self.test_plan_id}/suites/{self.parent_suite_id}/?api-version=5.0"
         response = requests.post(url, auth=('PAT', self.pat), json={
             "name": name,
             "suiteType": "StaticTestSuite"
         })
-        return response.json()
+
+        data = response.json()
+
+        item = data["value"][0]
+        
+        return item
     
     def get_test_suite(self, id):
-        url = f"{self.url}/deixei/_apis/test/plans/{self.test_plan_id}/suites/{id}?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/test/plans/{self.test_plan_id}/suites/{id}?api-version=5.0"
         response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
+        response_data = response.json()
+        return response_data
     
     def update_test_suite(self, id, name, description):
-        url = f"{self.url}/deixei/_apis/test/plans/{self.test_plan_id}/suites/{id}?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/test/plans/{self.test_plan_id}/suites/{id}?api-version=5.0"
         response = requests.patch(url, auth=('PAT', self.pat), json={
             "description": description,
             "suiteType": "StaticTestSuite"
         })
-        return response.json()
+        response_data = response.json()
+        return response_data
     
     def create_test_suite_if_not_exists(self, name, description):
         test_suites = self.get_test_suites()
@@ -402,10 +415,11 @@ class TestSuites:
 
     def add_test_case(self, id, test_case_id):
         # POST https://mytfsserver/DefaultCollection/fabrikam-fiber-tfvc/_apis/test/plans/1/suites/1/testcases/39,40?api-version=1.0
-        url = f"{self.url}/deixei/_apis/test/plans/{self.test_plan_id}/suites/{id}/testcases/{test_case_id}?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/test/plans/{self.test_plan_id}/suites/{id}/testcases/{test_case_id}?api-version=5.0"
         data = {}
         response = requests.post(url, auth=('PAT', self.pat), json=data)
-        return response.json()
+        response_data = response.json()
+        return response_data
 
 
 class TestPlans:
@@ -415,30 +429,34 @@ class TestPlans:
         self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
 
     def get_test_plans(self):
-        url = f"{self.url}/deixei/_apis/test/plans?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/test/plans?api-version=5.0"
         response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
+        response_data = response.json()
+        return response_data
         
     def create_test_plan(self, name, description):
-        url = f"{self.url}/deixei/_apis/test/plans?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/test/plans?api-version=5.0"
         response = requests.post(url, auth=('PAT', self.pat), json={
             "name": name,
             "description": description
         })
-        return response.json()
+        response_data = response.json()
+        return response_data
     
     def get_test_plan(self, id):
-        url = f"{self.url}/deixei/_apis/test/plans/{id}?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/test/plans/{id}?api-version=5.0"
         response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
+        response_data = response.json()
+        return response_data
     
     def update_test_plan(self, id, name, description):
-        url = f"{self.url}/deixei/_apis/test/plans/{id}?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/test/plans/{id}?api-version=5.0"
         response = requests.patch(url, auth=('PAT', self.pat), json={
             "name": name,
             "description": description
         })
-        return response.json()
+        response_data = response.json()
+        return response_data
     
     def create_test_plan_if_not_exists(self, name, description):
         test_plans = self.get_test_plans()
@@ -453,24 +471,28 @@ class TestConfigurations:
         self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
 
     def get_test_configurations(self):
-        url = f"{self.url}/deixei/_apis/test/configurations?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/test/configurations?api-version=5.0"
         response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
+        response_data = response.json()
+        return response_data
         
     def create_test_configuration(self, configuration):
-        url = f"{self.url}/deixei/_apis/test/configurations?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/test/configurations?api-version=5.0"
         response = requests.post(url, auth=('PAT', self.pat), json=configuration)
-        return response.json()
+        response_data = response.json()
+        return response_data
     
     def get_test_configuration(self, id):
-        url = f"{self.url}/deixei/_apis/test/configurations/{id}?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/test/configurations/{id}?api-version=5.0"
         response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
+        response_data = response.json()
+        return response_data
     
     def update_test_configuration(self, id, configuration):
-        url = f"{self.url}/deixei/_apis/test/configurations/{id}?api-version=5.0"
+        url = f"{self.url}/{self.project}/_apis/test/configurations/{id}?api-version=5.0"
         response = requests.patch(url, auth=('PAT', self.pat), json=configuration)
-        return response.json()
+        response_data = response.json()
+        return response_data
     
     def create_test_configuration_if_not_exists(self, configuration):
         test_configurations = self.get_test_configurations()
@@ -486,24 +508,28 @@ class TestVariables:
         self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
 
     def get_test_variables(self):
-        url = f"{self.url}/deixei/_apis/test/variables?api-version=5.0-preview.1"
+        url = f"{self.url}/{self.project}/_apis/test/variables?api-version=5.0-preview.1"
         response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
+        response_data = response.json()
+        return response_data
 
     def create_test_variable(self, variable):
-        url = f"{self.url}/deixei/_apis/test/variables?api-version=5.0-preview.1"
+        url = f"{self.url}/{self.project}/_apis/test/variables?api-version=5.0-preview.1"
         response = requests.post(url, auth=('PAT', self.pat), json=variable)
-        return response.json()
+        response_data = response.json()
+        return response_data
 
     def get_test_variable(self, id):
-        url = f"{self.url}/deixei/_apis/test/variables/{id}?api-version=5.0-preview.1"
+        url = f"{self.url}/{self.project}/_apis/test/variables/{id}?api-version=5.0-preview.1"
         response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
+        response_data = response.json()
+        return response_data
     
     def update_test_variable(self, id, variable):
-        url = f"{self.url}/deixei/_apis/test/variables/{id}?api-version=5.0-preview.1"
+        url = f"{self.url}/{self.project}/_apis/test/variables/{id}?api-version=5.0-preview.1"
         response = requests.patch(url, auth=('PAT', self.pat), json=variable)
-        return response.json()
+        response_data = response.json()
+        return response_data
 
     def create_test_variable_if_not_exists(self, variable):
         test_variables = self.get_test_variables()
