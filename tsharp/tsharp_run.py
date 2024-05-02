@@ -9,6 +9,7 @@ import json
 import xml.etree.ElementTree as ET
 
 VERBOSE = True
+target_ado_project = "deixei" ## /{self.project}/
 
 def verbose_print(message):
     if VERBOSE == True:
@@ -26,6 +27,7 @@ class MainRun:
 
         self.url = os.environ.get("DX_ADO_URL")
         self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
+        self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
         
         if self.url is None:
             raise ValueError("DX_ADO_URL is not set")
