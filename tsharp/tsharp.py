@@ -1,53 +1,37 @@
 import os
-import requests
 import yaml
+
+from tsharp_base import TSharpBase, TSharpConfig
+from tsharp_variables import TestVariables
+from tsharp_configurations import TestConfigurations
+from tsharp_test_plans import TestPlans
+from tsharp_test_suites import TestSuites
+from tsharp_workitems import WorkItem
 
 test_workplace = "/home/marcio/repos/deixei/sharp-testing/tests"
 
 target_ado_project = "deixei" ## /{self.project}/
 
-class Main:
+class Main(TSharpBase):
     def __init__(self):
-        self.url = os.environ.get("DX_ADO_URL")
-        self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-        self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
-        self.config = self.load_yaml_config()
+        super().__init__()
+
+        script_dir = os.path.dirname(os.path.realpath(__file__))
+        self.yaml_config = TSharpConfig(script_dir, "config.yaml", load_on_init=True)
+
+        self.config = self.yaml_config.config
         
         # TODO: param to control the execution
         self.update_variables()
         self.update_configurations()
         self.update_test_plans()
 
-        self.save_yaml_config()
-        
-    def load_yaml_config(self):
-        # Get the current script directory
-        script_dir = os.path.dirname(os.path.realpath(__file__))
-        # Join the script directory with the config file name
-        config_path = os.path.join(script_dir, 'config.yaml')
-        
-        config = {}
-
-        with open(config_path, 'r') as file:
-            config = yaml.safe_load(file)
-
-        return config
-    
-    def save_yaml_config(self):
-        # Get the current script directory
-        script_dir = os.path.dirname(os.path.realpath(__file__))
-        # Join the script directory with the config file name
-        config_path = os.path.join(script_dir, 'config.yaml')
-        
-        with open(config_path, 'w') as file:
-            yaml.dump(self.config, file)
+        self.yaml_config.save()
 
     def run(self):
         print(f"# This is TSharp.")
         # pretty print the config in yaml format
         print(yaml.dump(self.config))
-
-
 
     def update_variables(self):
         print("## Updating variables")
@@ -166,377 +150,6 @@ class Main:
 
                     test_suites.add_test_case(test_suite_id, test_case["id"])
 
-
-class WorkItem:
-    def __init__(self, workitem_type, name, id=0):
-        self.url = os.environ.get("DX_ADO_URL")
-        self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-        self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
-        
-        self.workitem_type = workitem_type
-        self._name = name
-        self._id = id
-        self._description = ""
-
-        self._plan_name = ""
-        self._suite_name = ""
-
-    @property
-    def test_plan(self):
-        return self._plan_name
-    
-    @test_plan.setter
-    def test_plan(self, value):
-        self._plan_name = value
-
-    @property
-    def suite_name(self):
-        return self._suite_name
-
-    @suite_name.setter
-    def suite_name(self, value):
-        self._suite_name = value    
-
-    @property
-    def id(self):
-        return self._id
-    
-    @id.setter
-    def id(self, value):
-        self._id = value
-
-    @property
-    def name(self):
-        return self._name
-    
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    @property
-    def description(self):
-        return self._description
-    
-    @description.setter
-    def description(self, value):
-        self._description = value
-
-
-    # Associated Automation, https://learn.microsoft.com/en-us/azure/devops/boards/queries/build-test-integration?view=azure-devops#fields
-    ### test_my_test_plan2/test_my_test_suite_2.py::test_my_test_case_2
-    ## Automated test name, Microsoft.VSTS.TCM.AutomatedTestName
-    ## test_my_test_suite_2.py::test_my_test_case_2
-    @property
-    def test_function_name(self):
-        return f"test_{self.suite_name}.py::test_{self.name}"
-    ## Automated test storage, Microsoft.VSTS.TCM.AutomatedTestStorage
-    ## tests/test_my_test_plan2
-    @property
-    def test_folder(self):
-        return f"tests/test_{self.test_plan}"
-    
-    ## Automated test type, Microsoft.VSTS.TCM.AutomationStatus
-
-
-    def build_work_item(self):     
-        return [
-            {
-                "op": "add",
-                "path": "/fields/System.Title",
-                "value": self.name
-            },
-            {
-                "op": "add",
-                "path": "/fields/System.Description",
-                "value": self.description
-            },
-            {
-                "op": "add",
-                "path": "/fields/Microsoft.VSTS.TCM.automatedTestId",
-                "value": self.test_function_name
-            },
-            {
-                "op": "add",
-                "path": "/fields/Microsoft.VSTS.TCM.AutomatedTestName",
-                "value": self.test_function_name
-            },
-            {
-                "op": "add",
-                "path": "/fields/Microsoft.VSTS.TCM.AutomatedTestStorage",
-                "value": self.test_folder
-            },
-            {
-                "op": "add",
-                "path": "/fields/Microsoft.VSTS.TCM.AutomatedTestType",
-                "value": "Automated"
-            }
-            ]
-    
-
-    
-    def get_by_name(self):
-        # get all work items of type TestCase
-        url = f"{self.url}/{self.project}/_apis/wit/wiql?api-version=7.1-preview.2"
-
-        query = {
-            "query": f"Select [System.Id], [System.Title], [System.Description] From WorkItems Where [System.WorkItemType] = '{self.workitem_type}' and [System.Title] = '{self.name}'"
-        }
-
-        response = requests.post(url, json=query, auth=('PAT', self.pat))
-        data = response.json()
-
-        if data["workItems"]:
-            self.id = data["workItems"][0]["id"]
-            #TODO: this can be a bug with invalide charecters
-            #self.name = data["workItems"][0]["fields"]["System.Title"]
-            #self.description = data["workItems"][0]["fields"]["System.Description"]
-
-        return data
-
-    def get_by_id(self):
-        url = f"{self.url}/{self.project}/_apis/wit/workitems/{self.id}?api-version=5.0&$expand=all"
-        response = requests.get(url, auth=('PAT', self.pat))
-        data = response.json()
-        if data:
-            self.name = data["fields"]["System.Title"]
-            self.description = data["fields"].get("System.Description", "")
-
-        return data
-    
-    def get(self):
-        if self.id == 0:
-            return self.get_by_name()
-        return self.get_by_id()
-    
-    def create(self):
-        url = f"{self.url}/{self.project}/_apis/wit/workitems/${self.workitem_type}?api-version=5.0"
-        json_data=self.build_work_item()
-
-        headers = {
-            "Content-Type": "application/json-patch+json"
-        }
-
-        response = requests.patch(url, auth=('PAT', self.pat), json=json_data, headers=headers)
-        
-        response_data = response.json()
-        return response_data
-    
-    def update(self):
-        url = f"{self.url}/{self.project}/_apis/wit/workitems/{self.id}?api-version=5.0"
-
-        json_data=self.build_work_item()
-
-        headers = {
-            "Content-Type": "application/json-patch+json"
-        }
-
-        response = requests.patch(url, auth=('PAT', self.pat), json=json_data, headers=headers)
-
-        response_data = response.json()
-        return response_data
-    
-    def create_if_not_exists(self):
-        if self.id != 0:
-            return self.update()
-        return self.create()    
-
-
-class WorkItems:
-    def __init__(self, workitem_type):
-        self.url = os.environ.get("DX_ADO_URL")
-        self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-        self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
-        
-        self.workitem_type = workitem_type
-
-    def get_all_work_items(self):
-        # get all work items of type TestCase
-        url = f"{self.url}/{self.project}/_apis/wit/wiql?api-version=7.1-preview.2"
-
-        query = {
-            "query": f"Select [System.Id], [System.Title] From WorkItems Where [System.WorkItemType] = '{self.workitem_type}'"
-        }
-
-        response = requests.post(url, json=query, auth=('PAT', self.pat))
-        response_data = response.json()
-        return response_data
-
-
-        
-
-
-class TestSuites:
-    def __init__(self, test_plan_id, parent_suite_id):
-        self.url = os.environ.get("DX_ADO_URL")
-        self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-        self.test_plan_id = test_plan_id
-        self.parent_suite_id = parent_suite_id
-
-    def get_test_suites(self):
-        url = f"{self.url}/{self.project}/_apis/test/plans/{self.test_plan_id}/suites?api-version=5.0"
-        response = requests.get(url, auth=('PAT', self.pat))
-        response_data = response.json()
-        return response_data
-    
-    def create_test_suite(self, name, description):
-        url = f"{self.url}/{self.project}/_apis/test/plans/{self.test_plan_id}/suites/{self.parent_suite_id}/?api-version=5.0"
-        response = requests.post(url, auth=('PAT', self.pat), json={
-            "name": name,
-            "suiteType": "StaticTestSuite"
-        })
-
-        data = response.json()
-
-        item = data["value"][0]
-        
-        return item
-    
-    def get_test_suite(self, id):
-        url = f"{self.url}/{self.project}/_apis/test/plans/{self.test_plan_id}/suites/{id}?api-version=5.0"
-        response = requests.get(url, auth=('PAT', self.pat))
-        response_data = response.json()
-        return response_data
-    
-    def update_test_suite(self, id, name, description):
-        url = f"{self.url}/{self.project}/_apis/test/plans/{self.test_plan_id}/suites/{id}?api-version=5.0"
-        response = requests.patch(url, auth=('PAT', self.pat), json={
-            "description": description,
-            "suiteType": "StaticTestSuite"
-        })
-        response_data = response.json()
-        return response_data
-    
-    def create_test_suite_if_not_exists(self, name, description):
-        test_suites = self.get_test_suites()
-        for test_suite in test_suites["value"]:
-            if test_suite["name"] == name:
-                return self.update_test_suite(test_suite["id"], name, description)
-        return self.create_test_suite(name, description)
-
-    def add_test_case(self, id, test_case_id):
-        # POST https://mytfsserver/DefaultCollection/fabrikam-fiber-tfvc/_apis/test/plans/1/suites/1/testcases/39,40?api-version=1.0
-        url = f"{self.url}/{self.project}/_apis/test/plans/{self.test_plan_id}/suites/{id}/testcases/{test_case_id}?api-version=5.0"
-        data = {}
-        response = requests.post(url, auth=('PAT', self.pat), json=data)
-        response_data = response.json()
-        return response_data
-
-
-class TestPlans:
-    def __init__(self):
-        self.url = os.environ.get("DX_ADO_URL")
-        self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-        self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
-
-    def get_test_plans(self):
-        url = f"{self.url}/{self.project}/_apis/test/plans?api-version=5.0"
-        response = requests.get(url, auth=('PAT', self.pat))
-        response_data = response.json()
-        return response_data
-        
-    def create_test_plan(self, name, description):
-        url = f"{self.url}/{self.project}/_apis/test/plans?api-version=5.0"
-        response = requests.post(url, auth=('PAT', self.pat), json={
-            "name": name,
-            "description": description
-        })
-        response_data = response.json()
-        return response_data
-    
-    def get_test_plan(self, id):
-        url = f"{self.url}/{self.project}/_apis/test/plans/{id}?api-version=5.0"
-        response = requests.get(url, auth=('PAT', self.pat))
-        response_data = response.json()
-        return response_data
-    
-    def update_test_plan(self, id, name, description):
-        url = f"{self.url}/{self.project}/_apis/test/plans/{id}?api-version=5.0"
-        response = requests.patch(url, auth=('PAT', self.pat), json={
-            "name": name,
-            "description": description
-        })
-        response_data = response.json()
-        return response_data
-    
-    def create_test_plan_if_not_exists(self, name, description):
-        test_plans = self.get_test_plans()
-        for test_plan in test_plans["value"]:
-            if test_plan["name"] == name:
-                return self.update_test_plan(test_plan["id"], name, description)
-        return self.create_test_plan(name, description)
-
-class TestConfigurations:
-    def __init__(self):
-        self.url = os.environ.get("DX_ADO_URL")
-        self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-
-    def get_test_configurations(self):
-        url = f"{self.url}/{self.project}/_apis/test/configurations?api-version=5.0"
-        response = requests.get(url, auth=('PAT', self.pat))
-        response_data = response.json()
-        return response_data
-        
-    def create_test_configuration(self, configuration):
-        url = f"{self.url}/{self.project}/_apis/test/configurations?api-version=5.0"
-        response = requests.post(url, auth=('PAT', self.pat), json=configuration)
-        response_data = response.json()
-        return response_data
-    
-    def get_test_configuration(self, id):
-        url = f"{self.url}/{self.project}/_apis/test/configurations/{id}?api-version=5.0"
-        response = requests.get(url, auth=('PAT', self.pat))
-        response_data = response.json()
-        return response_data
-    
-    def update_test_configuration(self, id, configuration):
-        url = f"{self.url}/{self.project}/_apis/test/configurations/{id}?api-version=5.0"
-        response = requests.patch(url, auth=('PAT', self.pat), json=configuration)
-        response_data = response.json()
-        return response_data
-    
-    def create_test_configuration_if_not_exists(self, configuration):
-        test_configurations = self.get_test_configurations()
-        for test_configuration in test_configurations["value"]:
-            if test_configuration["name"] == configuration["name"]:
-                return self.update_test_configuration(test_configuration["id"], configuration)
-        return self.create_test_configuration(configuration)
-
-class TestVariables:
-    def __init__(self):
-        self.url = os.environ.get("DX_ADO_URL")
-        self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-        self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
-
-    def get_test_variables(self):
-        url = f"{self.url}/{self.project}/_apis/test/variables?api-version=5.0-preview.1"
-        response = requests.get(url, auth=('PAT', self.pat))
-        response_data = response.json()
-        return response_data
-
-    def create_test_variable(self, variable):
-        url = f"{self.url}/{self.project}/_apis/test/variables?api-version=5.0-preview.1"
-        response = requests.post(url, auth=('PAT', self.pat), json=variable)
-        response_data = response.json()
-        return response_data
-
-    def get_test_variable(self, id):
-        url = f"{self.url}/{self.project}/_apis/test/variables/{id}?api-version=5.0-preview.1"
-        response = requests.get(url, auth=('PAT', self.pat))
-        response_data = response.json()
-        return response_data
-    
-    def update_test_variable(self, id, variable):
-        url = f"{self.url}/{self.project}/_apis/test/variables/{id}?api-version=5.0-preview.1"
-        response = requests.patch(url, auth=('PAT', self.pat), json=variable)
-        response_data = response.json()
-        return response_data
-
-    def create_test_variable_if_not_exists(self, variable):
-        test_variables = self.get_test_variables()
-        for test_variable in test_variables["value"]:
-            if test_variable["name"] == variable["name"]:
-                return self.update_test_variable(test_variable["id"], variable)
-        return self.create_test_variable(variable)
 
 
 if __name__ == "__main__":
