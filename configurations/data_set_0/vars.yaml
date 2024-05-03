@@ -1,0 +1,9 @@
+variables:
+- name: my_var
+  values:
+  - my_value
+  - my_value2
+- name: my_var2
+  values:
+  - my_value3
+  - my_value5

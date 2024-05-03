@@ -1,0 +1,9 @@
+configurations:
+- description: My config description
+  name: my_config
+  state: active
+  values:
+  - name: my_var
+    value: my_value
+  - name: my_var2
+    value: my_value3

@@ -1,0 +1,12 @@
+test_plans:
+- description: My test plan description to confirm the test plan is working
+  name: Test_Plan_1
+  test_suites:
+  - description: My test suite description
+    name: my_test_suite
+    test_cases:
+    - configuration:
+        name: my_config
+      description: My test case description
+      name: my_test_case
+
