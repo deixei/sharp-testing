@@ -116,7 +116,27 @@ class TestSuites(TSharpBase):
         """
         url = f"/_apis/test/plans/{self.test_plan_id}/suites/{id}/testcases/{test_case_id}?api-version=5.0"
         data = {}
-        response_data = self.requests_post(url, data)
+        try:
+            response_data = self.requests_post(url, data)
+        except Exception as e:
+            exception_data = str(e)
+            if not "Duplicate test case" in exception_data:
+                raise e
         
         return response_data
 
+    def get_test_case(self, id, test_case_id):
+        """
+        Get a test case in a test suite.
+
+        Args:
+            id (int): The ID of the test suite.
+            test_case_id (int): The ID of the test case to add.
+
+        Returns:
+            dict: The response data containing the added test case.
+        """
+        url = f"/_apis/test/plans/{self.test_plan_id}/suites/{id}/testcases/{test_case_id}?api-version=5.0"
+        response_data = self.requests_get(url)
+        
+        return response_data
