@@ -1,5 +1,6 @@
 import os
 import requests
+from azure_sharp import AzureSharp
 
 class PyTestSharp:
     """
@@ -44,6 +45,8 @@ class PyTestSharp:
         self.azure_tenant = azure_tenant
         self.azure_client_id = azure_client_id
         self.azure_secret = azure_secret
+
+        self.azure_sharp = AzureSharp(azure_tenant, azure_client_id, azure_secret, verbose)
 
 
     def show_inputs(self):

@@ -60,5 +60,9 @@ def test_my_test_case_4(ado_config, test_run_id, test_result_id, ado_url, ado_pa
 
 	sharp.show_inputs()
 
+	
+	for item in sharp.azure_sharp.query_management_groups():
+		print(item)
+
 	assert True
 
