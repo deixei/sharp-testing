@@ -50,6 +50,7 @@ class PyTestSharp:
         """
         Prints the input values of the PyTestSharp object.
         """
+        print(f"\n")
         print(f"#"*80)
         print(f"# Sharp Testing Runner Helper")
         print(f"## Inputs")
@@ -66,7 +67,7 @@ class PyTestSharp:
 
             print(f"- azure_tenant:{self.azure_tenant}")
             print(f"- azure_client_id:{self.azure_client_id}")
-            
+
         print(f"#"*80)
 
     def add_evidence(self):
