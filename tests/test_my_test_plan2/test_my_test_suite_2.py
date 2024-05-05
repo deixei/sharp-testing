@@ -3,49 +3,45 @@ import os
 import pytest
 
 @pytest.mark.test_id(27)
-def test_my_test_case_2(ado_config):
-	# wi: 27
-	# tc: My test case description
-	print("This is a test function")
+def test_my_test_case_2(ado_config, test_run_id, test_result_id):
+	"""
+	My test case description
+	Details:{'configuration': {'name': 'my_config'}, 'description': 'My test case description', 'id': 27, 'name': 'my_test_case_2'}
+
+	Args:
+		ado_config: The ADO configuration.
+		test_run_id: The ID of the test run.
+		test_result_id: The ID of the test result.
+
+	Returns:
+		None
+	"""
+	work_item_id=27
+	test_case_description="My test case description"
+	print("ado_config:", ado_config)
+	print("test_run_id:", test_run_id)
+	print("test_result_id:", test_result_id)
 	assert True
 
 
 @pytest.mark.test_id(28)
-def test_my_test_case_3(ado_config):
-	# wi: 28
-	# tc: My test case description
-	print("This is a test function")
-	print(f"test_print_name_3(name): {ado_config}")
-	
-	for config_item in ado_config:
-		name = config_item["name"]
-		value = config_item["value"]
+def test_my_test_case_3(ado_config, test_run_id, test_result_id):
+	"""
+	My test case description
+	Details:{'configuration': {'name': 'my_config'}, 'description': 'My test case description', 'id': 28, 'name': 'my_test_case_3'}
 
-		print(f"{name}: {value}")
+	Args:
+		ado_config: The ADO configuration.
+		test_run_id: The ID of the test run.
+		test_result_id: The ID of the test result.
 
-		if name == "my_var":
-			assert value == "my_value"
-
-		if name == "my_var2":
-			assert value == "my_value3"
-
-
-		assert value != "Windows 10"
-	
-
-
-@pytest.mark.test_id(27)
-def test_my_test_case_2(ado_config):
-	# wi: 27
-	# tc: My test case description
-	print("This is a test function")
-	assert True
-
-
-@pytest.mark.test_id(28)
-def test_my_test_case_3(ado_config):
-	# wi: 28
-	# tc: My test case description
-	print("This is a test function")
+	Returns:
+		None
+	"""
+	work_item_id=28
+	test_case_description="My test case description"
+	print("ado_config:", ado_config)
+	print("test_run_id:", test_run_id)
+	print("test_result_id:", test_result_id)
 	assert True
 

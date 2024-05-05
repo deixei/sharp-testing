@@ -3,17 +3,23 @@ import os
 import pytest
 
 @pytest.mark.test_id(26)
-def test_my_test_case(ado_config):
-	# wi: 26
-	# tc: My test case description
-	print("This is a test function")
-	assert True
+def test_my_test_case(ado_config, test_run_id, test_result_id):
+	"""
+	My test case description
+	Details:{'configuration': {'name': 'my_config'}, 'description': 'My test case description', 'id': 26, 'name': 'my_test_case', 'steps': [{'command': "echo 'Hello, World!'", 'description': 'My step description', 'expected_exit_code': 0, 'expected_output': 'Hello, World!', 'name': 'my_step', 'timeout': 10}]}
 
+	Args:
+		ado_config: The ADO configuration.
+		test_run_id: The ID of the test run.
+		test_result_id: The ID of the test result.
 
-@pytest.mark.test_id(26)
-def test_my_test_case(ado_config):
-	# wi: 26
-	# tc: My test case description
-	print("This is a test function")
+	Returns:
+		None
+	"""
+	work_item_id=26
+	test_case_description="My test case description"
+	print("ado_config:", ado_config)
+	print("test_run_id:", test_run_id)
+	print("test_result_id:", test_result_id)
 	assert True
 

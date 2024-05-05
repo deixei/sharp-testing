@@ -20,7 +20,7 @@ class Main(TSharpBase):
         super().__init__(ado_url, ado_pat, ado_project, verbose)
         self.test_folder = test_folder
 
-        self.dataset = TSharpConfig(config_folder, dataset)
+        self.dataset = TSharpConfig(config_folder, dataset, verbose)
 
         self.run_var_update = run_var_update
         self.run_config_update = run_config_update
@@ -50,12 +50,17 @@ class Main(TSharpBase):
 
         if self.verbose and "v" in self.verbose:
             print("## Dataset")
-            print("### Variables")
-            print(yaml.dump(self.dataset.vars))
-            print("### Configurations")
-            print(yaml.dump(self.dataset.configs))
-            print("### Test Cases")
-            print(yaml.dump(self.dataset.testcases))
+            if "y" not in self.run_var_update:
+                print("### Variables")
+                print(yaml.dump(self.dataset.vars))
+            
+            if "y" not in self.run_config_update:
+                print("### Configurations")
+                print(yaml.dump(self.dataset.configs))
+            
+            if "y" not in self.run_tc_update:
+                print("### Test Cases")
+                print(yaml.dump(self.dataset.testcases))
 
         
 

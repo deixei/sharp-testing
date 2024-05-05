@@ -30,44 +30,43 @@ class TSharpBase:
         requests_patch: Sends a PATCH request to the specified URL with the provided data.
     """
 
-    class TSharpBase:
-        def __init__(self, ado_url:str=None, ado_pat:str=None, ado_project:str=None, 
-                     verbose:str=None):
-            """
-            Initializes a new instance of the TSharpBase class.
+    def __init__(self, ado_url:str=None, ado_pat:str=None, ado_project:str=None, 
+                    verbose:str=None):
+        """
+        Initializes a new instance of the TSharpBase class.
 
-            Args:
-                ado_url (str, optional): The URL of the Azure DevOps organization. Defaults to None.
-                ado_pat (str, optional): The personal access token (PAT) for authenticating with Azure DevOps. Defaults to None.
-                ado_project (str, optional): The name of the Azure DevOps project. Defaults to None.
-                verbose (str, optional): The verbosity level for logging. Defaults to None.
+        Args:
+            ado_url (str, optional): The URL of the Azure DevOps organization. Defaults to None.
+            ado_pat (str, optional): The personal access token (PAT) for authenticating with Azure DevOps. Defaults to None.
+            ado_project (str, optional): The name of the Azure DevOps project. Defaults to None.
+            verbose (str, optional): The verbosity level for logging. Defaults to None.
 
-            Raises:
-                ValueError: If ado_url is not set.
-                ValueError: If ado_pat is not set.
-                ValueError: If ado_project is not set.
-                ValueError: If the base URL has an invalid format.
+        Raises:
+            ValueError: If ado_url is not set.
+            ValueError: If ado_pat is not set.
+            ValueError: If ado_project is not set.
+            ValueError: If the base URL has an invalid format.
 
-            """
-            self.ado_url = ado_url
-            self.ado_pat = ado_pat
-            self.ado_project = ado_project
-            self.verbose = verbose
-            
-            if self.ado_url is None:
-                raise ValueError("ADO_URL is not set")
-            
-            if self.ado_pat is None:
-                raise ValueError("AZURE_DEVOPS_EXT_PAT is not set")
-            
-            if self.ado_project is None:
-                raise ValueError("AZURE_DEVOPS_EXT_PROJECT is not set")
-            
-            self.base_url = f"{self.ado_url}/{self.ado_project}"
+        """
+        self.ado_url = ado_url
+        self.ado_pat = ado_pat
+        self.ado_project = ado_project
+        self.verbose = verbose
+        
+        if self.ado_url is None:
+            raise ValueError("ADO_URL is not set")
+        
+        if self.ado_pat is None:
+            raise ValueError("AZURE_DEVOPS_EXT_PAT is not set")
+        
+        if self.ado_project is None:
+            raise ValueError("AZURE_DEVOPS_EXT_PROJECT is not set")
+        
+        self.base_url = f"{self.ado_url}/{self.ado_project}"
 
-            # check if base url has a valid URL regex
-            if not self.base_url.startswith("https://"):
-                raise ValueError("Invalid URL format for Azure DevOps")
+        # check if base url has a valid URL regex
+        if not self.base_url.startswith("https://"):
+            raise ValueError("Invalid URL format for Azure DevOps")
 
     def requests_get(self, partial_url):
         """
@@ -229,13 +228,22 @@ class TSharpConfig:
 
     """
 
-    def __init__(self, config_folder:str=None, dataset:str=None) -> None:
+    def __init__(self, config_folder: str = None, dataset: str = None, verbose: str = "v") -> None:
+        """
+        Initializes an instance of MyClass.
+
+        Args:
+            config_folder (str, optional): The path to the configuration folder. Defaults to None.
+            dataset (str, optional): The name of the dataset. Defaults to None.
+            verbose (str, optional): The verbosity level. Defaults to "v".
+        """
+        self.verbose = verbose
         self.dataset_folder = os.path.join(config_folder, dataset)
 
         self.filename_configs = "configs.yaml"
         self.filename_testcases = "testcases.yaml"
         self.filename_vars = "vars.yaml"
-        
+
         self.ado_path_configs = os.path.join(self.dataset_folder, self.filename_configs)
         self.ado_path_testcases = os.path.join(self.dataset_folder, self.filename_testcases)
         self.ado_path_vars = os.path.join(self.dataset_folder, self.filename_vars)
