@@ -10,19 +10,17 @@ import xml.etree.ElementTree as ET
 from tsharp_base import TSharpBase
 from tsharp import TestConfigurations, TestVariables
 from tsharp_constants import TARGET_ADO_URL, TARGET_ADO_PROJECT, VERBOSE
-
-class TSharpPyTestPlugin:
-    def pytest_sessionfinish(self):
-        print("*** [TSharpPyTestPlugin]: test run reporting finishing")
+from tsharp_pytest_plugin import TSharpPyTestPlugin
 
 class TSharpRunner(TSharpBase):
 
     def __init__(self, run_id:str="0", test_folder:str=None, 
                  ado_url:str=None, ado_pat:str=None, ado_project:str=None, 
-                 verbose:str="v"):
+                 verbose:str="v", junitxml_folder:str=None):
         super().__init__(ado_url, ado_pat, ado_project, verbose)
         self.run_id = run_id
         self.test_folder = test_folder
+        self.junitxml_folder = junitxml_folder
     
     def execute(self):
         print(f"#"*80)
@@ -59,14 +57,25 @@ class TSharpRunner(TSharpBase):
         # read xml file output_file
         current_path_for_this_file = os.path.dirname(os.path.realpath(__file__))
         output_file_full_path = os.path.join(current_path_for_this_file, "..", output_file)
-
+        if os.path.exists(output_file_full_path) is False:
+            raise ValueError(f"Output file {output_file_full_path} does not exist")
+        
         tree = ET.parse(output_file_full_path)
         root = tree.getroot()
 
+        if root is None:
+            raise ValueError(f"Root element not found in {output_file_full_path}")
+
         ts_element = root.find("testsuite")
+        if ts_element is None:
+            raise ValueError(f"TestSuite element not found in {output_file_full_path}")
+        
         if self.verbose and "vvv" in self.verbose: print(ts_element.attrib)
 
         tc_element = ts_element.find("testcase")
+        if tc_element is None:
+            raise ValueError(f"TestCase element not found in {output_file_full_path}")
+        
         if self.verbose and "vvv" in self.verbose: print(tc_element.attrib)
 
         comment = "Nothing"
@@ -132,6 +141,9 @@ class TSharpRunner(TSharpBase):
     def add_test_result_attachment(self, run_id, test_result_id, attachment_file, attachment_filename, comment):
         url = f"/_apis/test/runs/{run_id}/results/{test_result_id}/attachments?api-version=7.1-preview.1"
 
+        if os.path.exists(attachment_file) is False:
+            raise ValueError(f"Attachment file {attachment_file} does not exist")
+
         data = {
             "stream": base64.b64encode(open(attachment_file, "rb").read()).decode(),
             "fileName": attachment_filename,
@@ -149,7 +161,7 @@ class TSharpRunner(TSharpBase):
         if results["count"] == 0:
             return
         
-        tc = TestConfigurations()
+        tc = TestConfigurations(self.ado_url, self.ado_pat, self.ado_project, self.verbose)
         for result in results["value"]:
             id = result["id"]
             test_point_id = result["testPoint"]["id"]
@@ -168,6 +180,8 @@ class TSharpRunner(TSharpBase):
                 continue
             else:
                 print("Test Type is Automated")
+                print(f"Starting execution for Test Case ID: {test_case_id}")
+
                 configuration_id = result["configuration"]["id"]
                 config = tc.get_test_configuration(configuration_id)
                 config_values = config["values"]
@@ -177,9 +191,11 @@ class TSharpRunner(TSharpBase):
 
                 # invoke a pytest test function
 
-                test_func_name = f"./{automatedTestStorage}/{automatedTestName}"
-                
-                output_file = f"junit/test-results-{test_point_id}.xml"
+                test_folder_parent = os.path.join(self.test_folder, "..")
+                test_func_name = os.path.join(test_folder_parent, automatedTestStorage, automatedTestName)
+                #test_func_name = f"./{automatedTestStorage}/{automatedTestName}"
+
+                output_file = os.path.join(self.junitxml_folder, f"test-results-{test_point_id}.xml")
 
                 if self.verbose and "vv" in self.verbose: print(f"Test Function Name: {test_func_name}; Output File: {output_file}")
 
@@ -207,6 +223,9 @@ def encode_list(list_values):
     encoded_string = base64.b64encode(json_string.encode()).decode()
     return encoded_string
 
+#TODO: remove this in PROD
+RUN_ID = "1000225"
+
 def parse_args():
     """
     Parse command line arguments and return the parsed arguments.
@@ -217,14 +236,16 @@ def parse_args():
     script_dir = os.path.dirname(os.path.realpath(__file__))
     parent_dir = os.path.join(script_dir, "..")
 
-    default_config_folder = os.path.join(parent_dir, "configurations")
     default_test_folder = os.path.join(parent_dir, "tests")
+    default_junitxml_folder = os.path.join(parent_dir, "junit")
 
     parser = argparse.ArgumentParser(description='Sharp Testing Runner from deixei')
 
-    parser.add_argument('--run_id', default=os.environ.get('RUN_ID'), help='The test run ID')
+    parser.add_argument('--run_id', default=os.environ.get('RUN_ID', RUN_ID), help='The test run ID')
     
     parser.add_argument('--test_folder', type=str, default=default_test_folder, help='Folder for PyTest Test Cases')
+    parser.add_argument('--junitxml_folder', type=str, default=default_junitxml_folder, help='Folder for JUnit XML Test Results')
+
     parser.add_argument('--ado_url', type=str, default=os.environ.get('DX_ADO_URL', TARGET_ADO_URL), help='Azure DevOps URL: https://dev.azure.com/deixeicom')
     parser.add_argument('--ado_project', type=str, default=os.environ.get('AZURE_DEVOPS_EXT_PROJECT', TARGET_ADO_PROJECT), help='Azure DevOps Project: deixei')
     parser.add_argument('--ado_pat', type=str, default=os.environ.get('AZURE_DEVOPS_EXT_PAT'), help='Azure DevOps PAT')
@@ -246,6 +267,12 @@ def main():
         # TODO: potentially create the folder if it does not exist
         raise ValueError("test_folder does not exist")
 
+    if args.junitxml_folder is None:
+        raise ValueError("junitxml_folder is not set")
+    
+    if os.path.exists(args.junitxml_folder) is False:
+        os.makedirs(args.junitxml_folder)
+
     if args.ado_url is None:
         raise ValueError("ado_url is not set")
     
@@ -260,7 +287,7 @@ def main():
         raise ValueError("Invalid URL format for Azure DevOps")        
 
 
-    test_execution_engine = TSharpRunner(args.run_id)
+    test_execution_engine = TSharpRunner(args.run_id, args.test_folder, args.ado_url, args.ado_pat, args.ado_project, args.verbose, args.junitxml_folder)
     test_execution_engine.execute()
 
 if __name__ == "__main__":

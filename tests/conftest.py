@@ -2,21 +2,6 @@ from pytest import fixture
 import base64
 import json
 
-def pytest_addoption(parser):
-    parser.addoption(
-        "--ado_config",
-        action="store"
-    )
-
-    parser.addoption(
-        "--test_run_id",
-        action="store"
-    )
-
-    parser.addoption(
-        "--test_result_id",
-        action="store"
-    )
 
 def decode_list(encoded_list_values):
     decoded_string = base64.b64decode(encoded_list_values).decode()
