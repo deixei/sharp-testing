@@ -6,8 +6,8 @@ class TestVariables(TSharpBase):
     Represents a class for managing test variables in TSharp.
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ado_url:str=None, ado_pat:str=None, ado_project:str=None, verbose:str=None):
+        super().__init__(ado_url, ado_pat, ado_project, verbose)
 
     def get_test_variables(self):
         """

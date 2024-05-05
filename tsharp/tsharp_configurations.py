@@ -8,8 +8,8 @@ class TestConfigurations(TSharpBase):
     This class provides methods to interact with test configurations in TSharp.
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ado_url:str=None, ado_pat:str=None, ado_project:str=None, verbose:str=None):
+        super().__init__(ado_url, ado_pat, ado_project, verbose)
 
     def get_test_configurations(self):
         """

@@ -51,4 +51,3 @@ test_plans:
       description: My test case description
       id: 30
       name: my_test_case_4
-      

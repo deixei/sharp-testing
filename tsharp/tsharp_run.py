@@ -1,15 +1,15 @@
-import base64
-from datetime import datetime
 import os
+import base64
 import requests
 import argparse
-from tsharp import TestConfigurations, TestVariables
 import pytest
 import json
+from datetime import datetime
 import xml.etree.ElementTree as ET
 
-VERBOSE = True
-target_ado_project = "deixei" ## /{self.project}/
+from tsharp import TestConfigurations, TestVariables
+from tsharp_constants import TARGET_ADO_URL, TARGET_ADO_PROJECT, VERBOSE
+
 
 def verbose_print(message):
     if VERBOSE == True:
@@ -27,7 +27,7 @@ class MainRun:
 
         self.url = os.environ.get("DX_ADO_URL")
         self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-        self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", target_ado_project)
+        self.project = os.environ.get("AZURE_DEVOPS_EXT_PROJECT", TARGET_ADO_PROJECT)
         
         if self.url is None:
             raise ValueError("DX_ADO_URL is not set")

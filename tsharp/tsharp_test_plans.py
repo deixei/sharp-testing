@@ -8,8 +8,8 @@ class TestPlans(TSharpBase):
     creating new test plans, updating existing test plans, and checking if a test plan already exists.
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ado_url:str=None, ado_pat:str=None, ado_project:str=None, verbose:str=None):
+        super().__init__(ado_url, ado_pat, ado_project, verbose)
 
     def get_test_plans(self):
         """

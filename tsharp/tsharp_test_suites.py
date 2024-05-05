@@ -7,14 +7,18 @@ class TestSuites(TSharpBase):
     Args:
         test_plan_id (int): The ID of the test plan.
         parent_suite_id (int): The ID of the parent suite.
+        ado_url (str, optional): The URL of the Azure DevOps organization. Defaults to None.
+        ado_pat (str, optional): The personal access token for the Azure DevOps organization. Defaults to None.
+        ado_project (str, optional): The name of the Azure DevOps project. Defaults to None.
+        verbose (str, optional): The verbosity level of the output. Defaults to v.
 
     Attributes:
         test_plan_id (int): The ID of the test plan.
         parent_suite_id (int): The ID of the parent suite.
     """
 
-    def __init__(self, test_plan_id, parent_suite_id):
-        super().__init__()
+    def __init__(self, test_plan_id, parent_suite_id, ado_url:str=None, ado_pat:str=None, ado_project:str=None, verbose:str="v"):
+        super().__init__(ado_url, ado_pat, ado_project, verbose)
         self.test_plan_id = test_plan_id
         self.parent_suite_id = parent_suite_id
 
@@ -116,6 +120,7 @@ class TestSuites(TSharpBase):
         """
         url = f"/_apis/test/plans/{self.test_plan_id}/suites/{id}/testcases/{test_case_id}?api-version=5.0"
         data = {}
+        response_data = {}
         try:
             response_data = self.requests_post(url, data)
         except Exception as e:

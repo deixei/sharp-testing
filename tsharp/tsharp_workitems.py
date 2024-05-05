@@ -12,8 +12,8 @@ class WorkItems(TSharpBase):
 
     """
 
-    def __init__(self, workitem_type):
-        super().__init__()
+    def __init__(self, workitem_type, ado_url:str=None, ado_pat:str=None, ado_project:str=None, verbose:str=None):
+        super().__init__(ado_url, ado_pat, ado_project, verbose)
 
         self.workitem_type = workitem_type
 
@@ -56,8 +56,8 @@ class WorkItem(TSharpBase):
         suite_name (str): The name of the test suite associated with the work item.
     """
 
-    def __init__(self, workitem_type, name, id=0):
-        super().__init__()
+    def __init__(self, workitem_type, name, id=0, ado_url:str=None, ado_pat:str=None, ado_project:str=None, verbose:str=None):
+        super().__init__(ado_url, ado_pat, ado_project, verbose)
         self.workitem_type = workitem_type
         self._name = name
         self._id = id
