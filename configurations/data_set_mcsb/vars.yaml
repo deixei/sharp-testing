@@ -1,0 +1,9 @@
+variables:
+- name: Environment
+  values:
+  - DEV
+  - TEST
+  - STAGING
+  - PROD
+  - SHARED
+  - GLOBAL

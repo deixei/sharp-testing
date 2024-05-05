@@ -2,3 +2,11 @@ pyyaml
 requests
 pytest
 pytest-azurepipelines
+azure-common
+azure-core
+azure-identity
+azure-mgmt-resource
+azure-mgmt-storage
+azure-storage-blob
+azure-mgmt-resourcegraph
+azure-mgmt-managementgroups

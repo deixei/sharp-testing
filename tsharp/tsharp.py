@@ -1,82 +1,109 @@
 import os
-import requests
 import yaml
+import argparse
 
-test_workplace = "/home/marcio/repos/deixei/sharp-testing/tests"
+from tsharp_constants import TARGET_ADO_URL, TARGET_ADO_PROJECT
+from tsharp_base import TSharpBase, TSharpConfig
+from tsharp_variables import TestVariables
+from tsharp_configurations import TestConfigurations
+from tsharp_test_plans import TestPlans
+from tsharp_test_suites import TestSuites
+from tsharp_workitems import WorkItem
 
-class Main:
-    def __init__(self):
-        self.url = os.environ.get("DX_ADO_URL")
-        self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-        self.config = self.load_yaml_config()
-
-        self.update_variables()
-        self.update_configurations()
-        self.update_test_plans()
-
-        self.save_yaml_config()
+class Main(TSharpBase):
+    def __init__(self, 
+                 config_folder:str=None, dataset:str=None, test_folder:str=None, 
+                 ado_url:str=None, ado_pat:str=None, ado_project:str=None, 
+                 verbose:str="v", 
+                 run_var_update:str="y", run_config_update:str="y", run_tc_update:str="y"):
         
-    def load_yaml_config(self):
-        # Get the current script directory
-        script_dir = os.path.dirname(os.path.realpath(__file__))
-        # Join the script directory with the config file name
-        config_path = os.path.join(script_dir, 'config.yaml')
-        
-        config = {}
+        super().__init__(ado_url, ado_pat, ado_project, verbose)
+        self.test_folder = test_folder
 
-        with open(config_path, 'r') as file:
-            config = yaml.safe_load(file)
+        self.dataset = TSharpConfig(config_folder, dataset, verbose)
 
-        return config
-    
-    def save_yaml_config(self):
-        # Get the current script directory
-        script_dir = os.path.dirname(os.path.realpath(__file__))
-        # Join the script directory with the config file name
-        config_path = os.path.join(script_dir, 'config.yaml')
-        
-        with open(config_path, 'w') as file:
-            yaml.dump(self.config, file)
+        self.run_var_update = run_var_update
+        self.run_config_update = run_config_update
+        self.run_tc_update = run_tc_update
 
     def run(self):
-        print(f"# This is TSharp.")
-        # pretty print the config in yaml format
-        print(yaml.dump(self.config))
+        print(f"#"*80)
+        print(f"# Sharp Testing")
+        print(f"#"*80)
 
+        if "y" not in self.run_var_update:
+            print("## Skipping Updating variables")
+        else:
+            self.update_variables()
+        
+        if "y" not in self.run_config_update:
+            print("## Skipping Updating configurations")
+        else:
+            self.update_configurations()
 
+        if "y" not in self.run_tc_update:
+            print("## Skipping Updating test cases")
+        else:
+            self.update_test_plans()
+
+        self.dataset.save_all()
+
+        if self.verbose and "v" in self.verbose:
+            print("## Dataset")
+            if "y" in self.run_var_update:
+                print("### Variables")
+                print(yaml.dump(self.dataset.vars))
+            
+            if "y" in self.run_config_update:
+                print("### Configurations")
+                print(yaml.dump(self.dataset.configs))
+            
+            if "y" in self.run_tc_update:
+                print("### Test Cases")
+                print(yaml.dump(self.dataset.testcases))
+
+        
 
     def update_variables(self):
         print("## Updating variables")
-        test_variables = TestVariables()
-        for test_variable in self.config["variables"]:
+        test_variables = TestVariables(self.ado_url, self.ado_pat, self.ado_project, self.verbose)
+        for test_variable in self.dataset.vars["variables"]:
             item = test_variables.create_test_variable_if_not_exists(test_variable)
             test_variable["id"] = item["id"]
 
     def update_configurations(self):
         print("## Updating configurations")
-        test_configurations = TestConfigurations()
-        for test_configuration in self.config["configurations"]:
+        test_configurations = TestConfigurations(self.ado_url, self.ado_pat, self.ado_project, self.verbose)
+        for test_configuration in self.dataset.configs["configurations"]:
             item = test_configurations.create_test_configuration_if_not_exists(test_configuration)
             test_configuration["id"] = item["id"]
 
     def set_test_folder(self, folder):
-        test_folder = os.path.join(test_workplace, f"test_{folder}")
-        # create the folder if it does not exist
+        if self.verbose and "vvv" in self.verbose:
+            print(f"Creating test folder for {folder}")
+
+        if not os.path.exists(self.test_folder):
+            os.makedirs(self.test_folder)
+
+        test_folder = os.path.join(self.test_folder, f"test_{folder}")
+
+        if self.verbose and "vvv" in self.verbose:
+            print(f"Test folder: {test_folder}")
+
         if not os.path.exists(test_folder):
             os.makedirs(test_folder)
 
         return test_folder
     
     def set_test_file(self, folder, file):
-        ##test_folder = self.set_test_folder(folder)
         test_file = os.path.join(folder, f"test_{file}.py")
-        # create the file if it does not exist
+        
         if not os.path.exists(test_file):
             with open(test_file, 'w') as f:
                 f.write("# This is autogenerated test suite file for sharp testing\n")
                 f.write("import os\n")
                 f.write("import pytest\n")
-
+                f.write("from pytestsharp import PyTestSharp\n")
 
         return test_file
 
@@ -91,8 +118,9 @@ class Main:
         with open(file, 'a') as f:
             f.write(f"\n")
             f.write(f"@pytest.mark.test_id({work_item['id']})\n")
-            f.write(f"def test_{function_name}(ado_config, test_run_id, test_result_id):\n")
-
+            f.write(f"def test_{function_name}(ado_config, test_run_id, test_result_id")
+            f.write(f", ado_url, ado_pat, ado_project, print_verbose, azure_tenant, azure_client_id, azure_secret):\n")
+            
             f.write(f"\t\"\"\"\n")
             f.write(f"\t{test_case['description']}\n")
             f.write(f"\tDetails:{test_case}\n")
@@ -101,6 +129,13 @@ class Main:
             f.write(f"\t\tado_config: The ADO configuration.\n")
             f.write(f"\t\ttest_run_id: The ID of the test run.\n")
             f.write(f"\t\ttest_result_id: The ID of the test result.\n")
+            f.write(f"\t\tado_url: The ADO URL.\n")
+            f.write(f"\t\tado_pat: The ADO PAT.\n")
+            f.write(f"\t\tado_project: The ADO Project.\n")
+            f.write(f"\t\tprint_verbose: The verbosity level.\n")
+            f.write(f"\t\tazure_tenant: The Azure Tenant.\n")
+            f.write(f"\t\tazure_client_id: The Azure Client ID.\n")
+            f.write(f"\t\tazure_secret: The Azure Secret.\n")
             f.write(f"\n")
             f.write(f"\tReturns:\n")
             f.write(f"\t\tNone\n")
@@ -109,17 +144,17 @@ class Main:
             f.write(f"\twork_item_id={work_item['id']}\n")
             f.write(f"\ttest_case_description=\"{test_case['description']}\"\n")
 
-            f.write(f"\tprint(\"ado_config:\", ado_config)\n")
-            f.write(f"\tprint(\"test_run_id:\", test_run_id)\n")
-            f.write(f"\tprint(\"test_result_id:\", test_result_id)\n")
-            
+            f.write(f"\tsharp = PyTestSharp(ado_config, test_run_id, test_result_id, work_item_id, test_case_description, ado_url, ado_pat, ado_project, print_verbose, azure_tenant, azure_client_id, azure_secret)\n")
+            f.write(f"\n")
+            f.write(f"\tsharp.show_inputs()\n")
+            f.write(f"\n")            
             f.write(f"\tassert True\n")
             f.write(f"\n")
 
     def update_test_plans(self):
         print("## Updating test plans")
-        test_plans = TestPlans()
-        for test_plan in self.config["test_plans"]:
+        test_plans = TestPlans(self.ado_url, self.ado_pat, self.ado_project, self.verbose)
+        for test_plan in self.dataset.testcases["test_plans"]:
             tp = test_plans.create_test_plan_if_not_exists(test_plan["name"], test_plan["description"])
 
             f = self.set_test_folder(test_plan["name"])
@@ -128,9 +163,11 @@ class Main:
             test_plan["id"] = test_plan_id
 
             root_suite_id = tp["rootSuite"]["id"]
-            test_suites = TestSuites(test_plan_id, root_suite_id)
-            print(f"PlanId: {test_plan_id}")
-            #print(tp)
+            test_suites = TestSuites(test_plan_id, root_suite_id, self.ado_url, self.ado_pat, self.ado_project, self.verbose)
+            
+            if self.verbose and "v" in self.verbose: print(f"PlanId: {test_plan_id}")
+            if self.verbose and "vv" in self.verbose: print(tp)
+            
             print("### Updating test suites")
             for test_suite in test_plan.get("test_suites", []):
                 test_suite_name = test_suite["name"]
@@ -140,13 +177,13 @@ class Main:
 
                 test_suite_id = ts["id"]
                 test_suite["id"] = test_suite_id
-                print("Test Suite")
-                #print(ts)
+                if self.verbose and "v" in self.verbose: print(f"Test Suite Id: {test_suite_id}")
+                if self.verbose and "vv" in self.verbose: print(ts)
                 for test_case in test_suite.get("test_cases", []):
-                    print("Test Case")
-                    print(test_case)
+                    if self.verbose and "v" in self.verbose: print(" - Test Case processing")
+                    if self.verbose and "vv" in self.verbose: print(test_case)
                     test_case_id = test_case.get("id", 0)
-                    work_item = WorkItem("Test Case", test_case["name"], test_case_id)
+                    work_item = WorkItem("Test Case", test_case["name"], test_case_id, self.ado_url, self.ado_pat, self.ado_project, self.verbose)
                     work_item.description = test_case.get("description", "")
                     work_item.test_plan = test_plan["name"]
                     work_item.suite_name = test_suite_name
@@ -154,8 +191,8 @@ class Main:
 
                     work_item.get()
                     wi = work_item.create_if_not_exists()
-                    print("Work Item")
-                    print(wi)
+                    if self.verbose and "v" in self.verbose: print("Work Item")
+                    if self.verbose and "vv" in self.verbose: print(wi)
                     test_case["id"] = wi["id"]
 
                     self.set_test_function(t, test_case["name"], test_case, wi)
@@ -163,353 +200,81 @@ class Main:
                     test_suites.add_test_case(test_suite_id, test_case["id"])
 
 
-class WorkItem:
-    def __init__(self, workitem_type, name, id=0):
-        self.url = os.environ.get("DX_ADO_URL")
-        self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-        self.workitem_type = workitem_type
-        self._name = name
-        self._id = id
-        self._description = ""
+def parse_args():
+    """
+    Parse command line arguments and return the parsed arguments.
 
-        self._plan_name = ""
-        self._suite_name = ""
+    Returns:
+        argparse.Namespace: The parsed command line arguments.
+    """
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    parent_dir = os.path.join(script_dir, "..")
 
-    @property
-    def test_plan(self):
-        return self._plan_name
+    default_config_folder = os.path.join(parent_dir, "configurations")
+    default_test_folder = os.path.join(parent_dir, "tests")
+
+    parser = argparse.ArgumentParser(description='Sharp Testing from deixei')
+    parser.add_argument('--config_folder', type=str, default=default_config_folder, help='Configuration folder')
+    parser.add_argument('--dataset', type=str, default='data_set_1', help='Configuration Dataset folder name')
+    parser.add_argument('--test_folder', type=str, default=default_test_folder, help='Folder for PyTest Test Cases')
+
+    parser.add_argument('--ado_url', type=str, default=os.environ.get('DX_ADO_URL', TARGET_ADO_URL), help='Azure DevOps URL: https://dev.azure.com/deixeicom')
+    parser.add_argument('--ado_project', type=str, default=os.environ.get('AZURE_DEVOPS_EXT_PROJECT', TARGET_ADO_PROJECT), help='Azure DevOps Project: deixei')
+    parser.add_argument('--ado_pat', type=str, default=os.environ.get('AZURE_DEVOPS_EXT_PAT'), help='Azure DevOps PAT')
+
+    parser.add_argument('--verbose', type=str, default="v", help='Verbose output')
+
+    parser.add_argument('--run_var_update', type=str, default="y", choices=["y", "n"] ,help='Update variables')
+    parser.add_argument('--run_config_update', type=str, default="y", choices=["y", "n"] ,help='Update configurations')
+    parser.add_argument('--run_tc_update', type=str, default="y", choices=["y", "n"] ,help='Update test cases')
+
+    return parser.parse_args()
+
+def main():
+    """
+    Entry point of the program.
     
-    @test_plan.setter
-    def test_plan(self, value):
-        self._plan_name = value
+    Parses command line arguments, validates the input, and runs the main logic.
+    """
+    args = parse_args()
 
-    @property
-    def suite_name(self):
-        return self._suite_name
-
-    @suite_name.setter
-    def suite_name(self, value):
-        self._suite_name = value    
-
-    @property
-    def id(self):
-        return self._id
+    if args.config_folder is None:
+        raise ValueError("config_folder is not set")
     
-    @id.setter
-    def id(self, value):
-        self._id = value
-
-    @property
-    def name(self):
-        return self._name
+    if os.path.exists(args.config_folder) is False:
+        raise ValueError("config_folder does not exist")
     
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    @property
-    def description(self):
-        return self._description
+    if args.dataset is None:
+        raise ValueError("dataset is not set")
     
-    @description.setter
-    def description(self, value):
-        self._description = value
-
-
-    # Associated Automation, https://learn.microsoft.com/en-us/azure/devops/boards/queries/build-test-integration?view=azure-devops#fields
-    ### test_my_test_plan2/test_my_test_suite_2.py::test_my_test_case_2
-    ## Automated test name, Microsoft.VSTS.TCM.AutomatedTestName
-    ## test_my_test_suite_2.py::test_my_test_case_2
-    @property
-    def test_function_name(self):
-        return f"test_{self.suite_name}.py::test_{self.name}"
-    ## Automated test storage, Microsoft.VSTS.TCM.AutomatedTestStorage
-    ## tests/test_my_test_plan2
-    @property
-    def test_folder(self):
-        return f"tests/test_{self.test_plan}"
+    dataset_folder = os.path.join(args.config_folder, args.dataset)
+    if os.path.exists(dataset_folder) is False:
+        raise ValueError("dataset does not exist")
     
-    ## Automated test type, Microsoft.VSTS.TCM.AutomationStatus
-
-
-    def build_work_item(self):     
-        return [
-            {
-                "op": "add",
-                "path": "/fields/System.Title",
-                "value": self.name
-            },
-            {
-                "op": "add",
-                "path": "/fields/System.Description",
-                "value": self.description
-            },
-            {
-                "op": "add",
-                "path": "/fields/Microsoft.VSTS.TCM.automatedTestId",
-                "value": self.test_function_name
-            },
-            {
-                "op": "add",
-                "path": "/fields/Microsoft.VSTS.TCM.AutomatedTestName",
-                "value": self.test_function_name
-            },
-            {
-                "op": "add",
-                "path": "/fields/Microsoft.VSTS.TCM.AutomatedTestStorage",
-                "value": self.test_folder
-            },
-            {
-                "op": "add",
-                "path": "/fields/Microsoft.VSTS.TCM.AutomatedTestType",
-                "value": "Automated"
-            }
-            ]
+    if args.test_folder is None:
+        raise ValueError("test_folder is not set")
     
+    if os.path.exists(args.test_folder) is False:
+        # TODO: potentially create the folder if it does not exist
+        raise ValueError("test_folder does not exist")
 
+    if args.ado_url is None:
+        raise ValueError("ado_url is not set")
     
-    def get_by_name(self):
-        # get all work items of type TestCase
-        url = f"{self.url}/deixei/_apis/wit/wiql?api-version=7.1-preview.2"
-
-        query = {
-            "query": f"Select [System.Id], [System.Title], [System.Description] From WorkItems Where [System.WorkItemType] = '{self.workitem_type}' and [System.Title] = '{self.name}'"
-        }
-
-        response = requests.post(url, json=query, auth=('PAT', self.pat))
-        data = response.json()
-
-        if data["workItems"]:
-            self.id = data["workItems"][0]["id"]
-            self.name = data["workItems"][0]["fields"]["System.Title"]
-            self.description = data["workItems"][0]["fields"]["System.Description"]
-
-        return data
-
-    def get_by_id(self):
-        url = f"{self.url}/deixei/_apis/wit/workitems/{self.id}?api-version=5.0&$expand=all"
-        response = requests.get(url, auth=('PAT', self.pat))
-        data = response.json()
-        if data:
-            self.name = data["fields"]["System.Title"]
-            self.description = data["fields"].get("System.Description", "")
-
-        return data
+    if args.ado_pat is None:
+        raise ValueError("ado_pat is not set")
     
-    def get(self):
-        if self.id == 0:
-            return self.get_by_name()
-        return self.get_by_id()
-    
-    def create(self):
-        url = f"{self.url}/deixei/_apis/wit/workitems/${self.workitem_type}?api-version=5.0"
-        json_data=self.build_work_item()
+    if args.ado_project is None:
+        raise ValueError("ado_project is not set")
 
-        headers = {
-            "Content-Type": "application/json-patch+json"
-        }
+    # check if base url has a valid URL regex
+    if not args.ado_url.startswith("https://"):
+        raise ValueError("Invalid URL format for Azure DevOps")
 
-        response = requests.patch(url, auth=('PAT', self.pat), json=json_data, headers=headers)
-        
-        return response.json()
-    
-    def update(self):
-        url = f"{self.url}/deixei/_apis/wit/workitems/{self.id}?api-version=5.0"
-
-        json_data=self.build_work_item()
-
-        headers = {
-            "Content-Type": "application/json-patch+json"
-        }
-
-        response = requests.patch(url, auth=('PAT', self.pat), json=json_data, headers=headers)
-
-        return response.json()
-    
-    def create_if_not_exists(self):
-        if self.id != 0:
-            return self.update()
-        return self.create()    
-
-
-class WorkItems:
-    def __init__(self, workitem_type):
-        self.url = os.environ.get("DX_ADO_URL")
-        self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-        self.workitem_type = workitem_type
-
-    def get_all_work_items(self):
-        # get all work items of type TestCase
-        url = f"{self.url}/deixei/_apis/wit/wiql?api-version=7.1-preview.2"
-
-        query = {
-            "query": f"Select [System.Id], [System.Title] From WorkItems Where [System.WorkItemType] = '{self.workitem_type}'"
-        }
-
-        response = requests.post(url, json=query, auth=('PAT', self.pat))
-        return response.json()
-
-
-        
-
-
-class TestSuites:
-    def __init__(self, test_plan_id, parent_suite_id):
-        self.url = os.environ.get("DX_ADO_URL")
-        self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-        self.test_plan_id = test_plan_id
-        self.parent_suite_id = parent_suite_id
-
-    def get_test_suites(self):
-        url = f"{self.url}/deixei/_apis/test/plans/{self.test_plan_id}/suites?api-version=5.0"
-        response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
-    
-    def create_test_suite(self, name, description):
-        url = f"{self.url}/deixei/_apis/test/plans/{self.test_plan_id}/suites/{self.parent_suite_id}/?api-version=5.0"
-        response = requests.post(url, auth=('PAT', self.pat), json={
-            "name": name,
-            "suiteType": "StaticTestSuite"
-        })
-        return response.json()
-    
-    def get_test_suite(self, id):
-        url = f"{self.url}/deixei/_apis/test/plans/{self.test_plan_id}/suites/{id}?api-version=5.0"
-        response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
-    
-    def update_test_suite(self, id, name, description):
-        url = f"{self.url}/deixei/_apis/test/plans/{self.test_plan_id}/suites/{id}?api-version=5.0"
-        response = requests.patch(url, auth=('PAT', self.pat), json={
-            "description": description,
-            "suiteType": "StaticTestSuite"
-        })
-        return response.json()
-    
-    def create_test_suite_if_not_exists(self, name, description):
-        test_suites = self.get_test_suites()
-        for test_suite in test_suites["value"]:
-            if test_suite["name"] == name:
-                return self.update_test_suite(test_suite["id"], name, description)
-        return self.create_test_suite(name, description)
-
-    def add_test_case(self, id, test_case_id):
-        # POST https://mytfsserver/DefaultCollection/fabrikam-fiber-tfvc/_apis/test/plans/1/suites/1/testcases/39,40?api-version=1.0
-        url = f"{self.url}/deixei/_apis/test/plans/{self.test_plan_id}/suites/{id}/testcases/{test_case_id}?api-version=5.0"
-        data = {}
-        response = requests.post(url, auth=('PAT', self.pat), json=data)
-        return response.json()
-
-
-class TestPlans:
-    def __init__(self):
-        self.url = os.environ.get("DX_ADO_URL")
-        self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-
-        
-
-
- 
-
-    def get_test_plans(self):
-        url = f"{self.url}/deixei/_apis/test/plans?api-version=5.0"
-        response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
-        
-    def create_test_plan(self, name, description):
-        url = f"{self.url}/deixei/_apis/test/plans?api-version=5.0"
-        response = requests.post(url, auth=('PAT', self.pat), json={
-            "name": name,
-            "description": description
-        })
-        return response.json()
-    
-    def get_test_plan(self, id):
-        url = f"{self.url}/deixei/_apis/test/plans/{id}?api-version=5.0"
-        response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
-    
-    def update_test_plan(self, id, name, description):
-        url = f"{self.url}/deixei/_apis/test/plans/{id}?api-version=5.0"
-        response = requests.patch(url, auth=('PAT', self.pat), json={
-            "name": name,
-            "description": description
-        })
-        return response.json()
-    
-    def create_test_plan_if_not_exists(self, name, description):
-        test_plans = self.get_test_plans()
-        for test_plan in test_plans["value"]:
-            if test_plan["name"] == name:
-                return self.update_test_plan(test_plan["id"], name, description)
-        return self.create_test_plan(name, description)
-
-class TestConfigurations:
-    def __init__(self):
-        self.url = os.environ.get("DX_ADO_URL")
-        self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-
-    def get_test_configurations(self):
-        url = f"{self.url}/deixei/_apis/test/configurations?api-version=5.0"
-        response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
-        
-    def create_test_configuration(self, configuration):
-        url = f"{self.url}/deixei/_apis/test/configurations?api-version=5.0"
-        response = requests.post(url, auth=('PAT', self.pat), json=configuration)
-        return response.json()
-    
-    def get_test_configuration(self, id):
-        url = f"{self.url}/deixei/_apis/test/configurations/{id}?api-version=5.0"
-        response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
-    
-    def update_test_configuration(self, id, configuration):
-        url = f"{self.url}/deixei/_apis/test/configurations/{id}?api-version=5.0"
-        response = requests.patch(url, auth=('PAT', self.pat), json=configuration)
-        return response.json()
-    
-    def create_test_configuration_if_not_exists(self, configuration):
-        test_configurations = self.get_test_configurations()
-        for test_configuration in test_configurations["value"]:
-            if test_configuration["name"] == configuration["name"]:
-                return self.update_test_configuration(test_configuration["id"], configuration)
-        return self.create_test_configuration(configuration)
-
-class TestVariables:
-    def __init__(self):
-        self.url = os.environ.get("DX_ADO_URL")
-        self.pat = os.environ.get("AZURE_DEVOPS_EXT_PAT")
-
-    def get_test_variables(self):
-        url = f"{self.url}/deixei/_apis/test/variables?api-version=5.0-preview.1"
-        response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
-
-    def create_test_variable(self, variable):
-        url = f"{self.url}/deixei/_apis/test/variables?api-version=5.0-preview.1"
-        response = requests.post(url, auth=('PAT', self.pat), json=variable)
-        return response.json()
-
-    def get_test_variable(self, id):
-        url = f"{self.url}/deixei/_apis/test/variables/{id}?api-version=5.0-preview.1"
-        response = requests.get(url, auth=('PAT', self.pat))
-        return response.json()
-    
-    def update_test_variable(self, id, variable):
-        url = f"{self.url}/deixei/_apis/test/variables/{id}?api-version=5.0-preview.1"
-        response = requests.patch(url, auth=('PAT', self.pat), json=variable)
-        return response.json()
-
-    def create_test_variable_if_not_exists(self, variable):
-        test_variables = self.get_test_variables()
-        for test_variable in test_variables["value"]:
-            if test_variable["name"] == variable["name"]:
-                return self.update_test_variable(test_variable["id"], variable)
-        return self.create_test_variable(variable)
-
+    main = Main(args.config_folder, args.dataset, args.test_folder, args.ado_url, args.ado_pat, args.ado_project, args.verbose, args.run_var_update, args.run_config_update, args.run_tc_update)
+    main.run()
 
 if __name__ == "__main__":
-    main = Main()
-    main.run()
+    main()
+    
 

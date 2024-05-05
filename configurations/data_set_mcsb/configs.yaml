@@ -1,0 +1,7 @@
+configurations:
+- description: Base Config
+  name: base_config
+  state: active
+  values:
+  - name: Environment
+    value: GLOBAL

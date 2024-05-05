@@ -1,0 +1,53 @@
+test_plans:
+- description: My test plan description to confirm the test plan is working
+  id: 16
+  name: Test_Plan_1
+  test_suites:
+  - description: My test suite description
+    id: 23
+    name: my_test_suite
+    test_cases:
+    - configuration:
+        name: my_config
+      description: My test case description
+      id: 26
+      name: my_test_case
+      steps:
+      - command: echo 'Hello, World!'
+        description: My step description
+        expected_exit_code: 0
+        expected_output: Hello, World!
+        name: my_step
+        timeout: 10
+- description: My test plan description2
+  id: 18
+  name: my_test_plan2
+  test_suites:
+  - description: My test suite description
+    id: 24
+    name: my_test_suite_2
+    test_cases:
+    - configuration:
+        name: my_config
+      description: My test case description
+      id: 27
+      name: my_test_case_2
+    - configuration:
+        name: my_config
+      description: My test case description
+      id: 28
+      name: my_test_case_3
+  - description: My test suite description
+    id: 25
+    name: my_test_suite_3
+    test_cases:
+    - configuration:
+        name: my_config
+      description: My test case description
+      id: 29
+      name: my_test_case_5
+    - configuration:
+        name: my_config
+      description: My test case description
+      id: 30
+      name: my_test_case_4
