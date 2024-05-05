@@ -16,11 +16,16 @@ class TSharpRunner(TSharpBase):
 
     def __init__(self, run_id:str="0", test_folder:str=None, 
                  ado_url:str=None, ado_pat:str=None, ado_project:str=None, 
-                 verbose:str="v", junitxml_folder:str=None):
-        super().__init__(ado_url, ado_pat, ado_project, verbose)
+                 print_verbose:str="v", junitxml_folder:str=None,
+                 azure_tenant:str=None, azure_client_id:str=None, azure_secret:str=None):
+        super().__init__(ado_url, ado_pat, ado_project, print_verbose)
         self.run_id = run_id
         self.test_folder = test_folder
         self.junitxml_folder = junitxml_folder
+
+        self.azure_tenant = azure_tenant
+        self.azure_client_id = azure_client_id
+        self.azure_secret = azure_secret
     
     def execute(self):
         print(f"#"*80)
@@ -205,7 +210,16 @@ class TSharpRunner(TSharpBase):
                     "--junitxml", output_file,
                     "--ado_config", encode_config_values,
                     "--test_run_id", f"{self.run_id}",
-                    "--test_result_id", f"{id}"
+                    "--test_result_id", f"{id}",
+                    "--ado_url", f"{self.ado_url}",
+                    "--ado_pat", f"{self.ado_pat}",
+                    "--ado_project", f"{self.ado_project}",
+                    "--print_verbose", f"{self.verbose}",
+
+                    "--azure_tenant", f"{self.azure_tenant}",
+                    "--azure_client_id", f"{self.azure_client_id}",
+                    "--azure_secret", f"{self.azure_secret}",
+
                     ], 
                     plugins=[TSharpPyTestPlugin()])
 
@@ -252,6 +266,10 @@ def parse_args():
 
     parser.add_argument('--verbose', type=str, default="v",choices=["v", "vv", "vvv"] , help='Verbose output')
 
+    parser.add_argument('--azure_tenant', type=str, default=os.environ.get('AZURE_TENANT'), help='Azure TENANT')
+    parser.add_argument('--azure_client_id', type=str, default=os.environ.get('AZURE_CLIENT_ID'), help='Azure CLIENT_ID')
+    parser.add_argument('--azure_secret', type=str, default=os.environ.get('AZURE_SECRET'), help='Azure SECRET')
+
     return parser.parse_args()
 
 def main():
@@ -287,7 +305,7 @@ def main():
         raise ValueError("Invalid URL format for Azure DevOps")        
 
 
-    test_execution_engine = TSharpRunner(args.run_id, args.test_folder, args.ado_url, args.ado_pat, args.ado_project, args.verbose, args.junitxml_folder)
+    test_execution_engine = TSharpRunner(args.run_id, args.test_folder, args.ado_url, args.ado_pat, args.ado_project, args.verbose, args.junitxml_folder, args.azure_tenant, args.azure_client_id, args.azure_secret)
     test_execution_engine.execute()
 
 if __name__ == "__main__":
