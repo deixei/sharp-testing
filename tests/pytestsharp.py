@@ -1,7 +1,7 @@
 import os
 import requests
 from azure_sharp import AzureSharp
-
+from ado_sharp import ADOLog, ADOTask
 class PyTestSharp:
     """
     A class representing a PyTestSharp object.
@@ -48,7 +48,6 @@ class PyTestSharp:
 
         self.azure_sharp = AzureSharp(azure_tenant, azure_client_id, azure_secret, verbose)
 
-
     def show_inputs(self):
         """
         Prints the input values of the PyTestSharp object.
@@ -57,20 +56,20 @@ class PyTestSharp:
         print(f"#"*80)
         print(f"# Sharp Testing Runner Helper")
         print(f"## Inputs")
+        ADOLog.group("Inputs")
         print(f"#"*80)        
-        print(f"- ado_config:{self.ado_config}")
-        print(f"- test_run_id:{self.test_run_id}")
-        print(f"- test_result_id:{self.test_result_id}")
-        print(f"- work_item_id:{self.work_item_id}")
-        print(f"- test_case_description:{self.test_case_description}")
+        print(f"- ado_config: {self.ado_config}")
+        print(f"- test_run_id: {self.test_run_id}")
+        print(f"- test_result_id: {self.test_result_id}")
+        print(f"- work_item_id: {self.work_item_id}")
+        print(f"- test_case_description: {self.test_case_description}")
 
         if self.verbose and "vv" in self.verbose:
-            print(f"- ado_url:{self.ado_url}")
-            print(f"- ado_project:{self.ado_project}")
-
-            print(f"- azure_tenant:{self.azure_tenant}")
-            print(f"- azure_client_id:{self.azure_client_id}")
-
+            print(f"- ado_url: {self.ado_url}")
+            print(f"- ado_project: {self.ado_project}")
+            print(f"- azure_tenant: {self.azure_tenant}")
+            print(f"- azure_client_id: {self.azure_client_id}")
+        ADOLog.endgroup()
         print(f"#"*80)
 
     def add_evidence(self):

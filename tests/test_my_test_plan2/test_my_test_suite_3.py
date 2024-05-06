@@ -2,6 +2,7 @@
 import os
 import pytest
 from pytestsharp import PyTestSharp
+from ado_sharp import ADOLog
 
 @pytest.mark.test_id(29)
 def test_my_test_case_5(ado_config, test_run_id, test_result_id, ado_url, ado_pat, ado_project, print_verbose, azure_tenant, azure_client_id, azure_secret):
@@ -59,7 +60,7 @@ def test_my_test_case_4(ado_config, test_run_id, test_result_id, ado_url, ado_pa
 	sharp = PyTestSharp(ado_config, test_run_id, test_result_id, work_item_id, test_case_description, ado_url, ado_pat, ado_project, print_verbose, azure_tenant, azure_client_id, azure_secret)
 
 	sharp.show_inputs()
-
+	ADOLog.warning("This is a warning message")
 	
 	for item in sharp.azure_sharp.query_management_groups():
 		print(item)
