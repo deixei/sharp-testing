@@ -1,396 +1,493 @@
 test_plans:
 - description: Microsoft cloud security benchmark
+  id: 31
   name: mcsb
   test_suites:
   - description: NS - Network Security
+    id: 33
     name: ns_network_security
     test_cases:
     - configuration:
         name: base_config
-      description: NS-1 - Establish network segmentation boundaries 
+      description: NS-1 - Establish network segmentation boundaries
+      id: 34
       name: ns_1_establish_network_segmentation_boundaries
     - configuration:
         name: base_config
       description: NS-2 - Secure cloud native services with network controls
+      id: 35
       name: ns_2_secure_cloud_native_services_with_network_controls
     - configuration:
         name: base_config
       description: NS-3 - Deploy firewall at the edge of enterprise network
+      id: 36
       name: ns_3_deploy_firewall_at_the_edge_of_enterprise_network
     - configuration:
         name: base_config
       description: NS-4 - Deploy intrusion detection-intrusion prevention systems
+      id: 37
       name: ns_4_deploy_intrusion_detection_intrusion_prevention_systems
     - configuration:
         name: base_config
       description: NS-5 - Deploy DDOS protection
+      id: 38
       name: ns_5_deploy_ddos_protection
     - configuration:
         name: base_config
       description: NS-6 - Deploy web application firewall
+      id: 39
       name: ns_6_deploy_web_application_firewall
     - configuration:
         name: base_config
       description: NS-7 - Simplify network security configuration
+      id: 40
       name: ns_7_simplify_network_security_configuration
     - configuration:
         name: base_config
       description: NS-8 - Detect and disable insecure services and  protocols
+      id: 41
       name: ns_8_detect_and_disable_insecure_services_and_protocols
     - configuration:
         name: base_config
-      description: NS-9 - Connect on-premises or cloud network privately 
+      description: NS-9 - Connect on-premises or cloud network privately
+      id: 42
       name: ns_9_connect_on_premises_or_cloud_network_privately
     - configuration:
         name: base_config
       description: NS-10 - Ensure Domain Name System (DNS) security
+      id: 43
       name: ns_10_ensure_domain_name_system_dns_security
-
   - description: IM - Identity Management
+    id: 44
     name: im_identity_management
     test_cases:
     - configuration:
         name: base_config
       description: IM-1 - Use centralized identity and authentication system
+      id: 45
       name: im_1_use_centralized_identity_and_authentication_system
     - configuration:
         name: base_config
       description: IM-2 - Protect identity and authentication systems
+      id: 46
       name: im_2_protect_identity_and_authentication_systems
     - configuration:
         name: base_config
       description: IM-3 - Manage application identities securely and automatically
+      id: 47
       name: im_3_manage_application_identities_securely_and_automatically
     - configuration:
         name: base_config
       description: IM-4 - Authenticate server and services
+      id: 48
       name: im_4_authenticate_server_and_services
     - configuration:
         name: base_config
       description: IM-5 - Use single sign-on (SSO) for application access
+      id: 49
       name: im_5_use_single_sign_on_sso_for_application_access
     - configuration:
         name: base_config
       description: IM-6 - Use strong authentication controls
+      id: 50
       name: im_6_use_strong_authentication_controls
     - configuration:
         name: base_config
       description: IM-7 - Restrict resource access based on  conditions
+      id: 51
       name: im_7_restrict_resource_access_based_on_conditions"
     - configuration:
         name: base_config
       description: IM-8 - Restrict the exposure of credential and secrets
+      id: 52
       name: im_8_restrict_the_exposure_of_credential_and_secrets
     - configuration:
         name: base_config
       description: IM-9 - Secure user access to  existing applications
+      id: 53
       name: im_9_secure_user_access_to_existing_applications
-
   - description: PA - Privileged Access
+    id: 54
     name: pa_privileged_access
     test_cases:
     - configuration:
         name: base_config
       description: PA-1 - Separate and limit highly privileged-administrative users
+      id: 55
       name: pa_1_separate_and_limit_highly_privileged_administrative_users
     - configuration:
         name: base_config
       description: PA-2 - Avoid standing access for user accounts and permissions
+      id: 56
       name: pa_2_avoid_standing_access_for_user_accounts_and_permissions
     - configuration:
         name: base_config
       description: PA-3 - Manage lifecycle of identities and entitlements
+      id: 57
       name: pa_3_manage_lifecycle_of_identities_and_entitlements
     - configuration:
         name: base_config
       description: PA-4 - Review and reconcile user access regularly
+      id: 58
       name: pa_4_review_and_reconcile_user_access_regularly
     - configuration:
         name: base_config
       description: PA-5 - Set up emergency access
+      id: 59
       name: pa_5_set_up_emergency_access
     - configuration:
         name: base_config
-      description: PA-6 - Use privileged access workstations-channel for administrative tasks
+      description: PA-6 - Use privileged access workstations-channel for administrative
+        tasks
+      id: 60
       name: pa_6_use_privileged_access_workstations_channel_for_administrative_tasks
     - configuration:
         name: base_config
       description: PA-7 - Follow just enough administration (least privilege) principle
+      id: 61
       name: pa_7_follow_just_enough_administration_least_privilege_principle
     - configuration:
         name: base_config
       description: PA-8 - Determine access process for cloud provider support
+      id: 62
       name: pa_8_determine_access_process_for_cloud_provider_support
-
   - description: DP - Data Protection
+    id: 63
     name: dp_data_protection
     test_cases:
     - configuration:
         name: base_config
       description: DP-1 - Discover, classify, and label sensitive data
+      id: 64
       name: dp_1_discover_classify_and_label_sensitive_data
     - configuration:
         name: base_config
       description: DP-2 - Monitor anomalies and threats targeting sensitive data
+      id: 65
       name: dp_2_monitor_anomalies_and_threats_targeting_sensitive_data
     - configuration:
         name: base_config
       description: DP-3 - Encrypt sensitive data in transit
+      id: 66
       name: dp_3_encrypt_sensitive_data_in_transit
     - configuration:
         name: base_config
-      description: DP-4 - Enable data at rest encryption by default  
+      description: DP-4 - Enable data at rest encryption by default
+      id: 67
       name: dp_4_enable_data_at_rest_encryption_by_default
     - configuration:
         name: base_config
-      description: DP-5 - Use customer-managed key option in data at rest encryption when required
+      description: DP-5 - Use customer-managed key option in data at rest encryption
+        when required
+      id: 68
       name: dp_5_use_customer_managed_key_option_in_data_at_rest_encryption_when_required
     - configuration:
         name: base_config
       description: DP-6 - Use a secure key management process
+      id: 69
       name: dp_6_use_a_secure_key_management_process
     - configuration:
         name: base_config
       description: DP-7 - Use a secure certificate management process
+      id: 70
       name: dp_7_use_a_secure_certificate_management_process
     - configuration:
         name: base_config
-      description: DP-8 - Ensure security of key and certificate repository 
+      description: DP-8 - Ensure security of key and certificate repository
+      id: 71
       name: dp_8_ensure_security_of_key_and_certificate_repository
-
   - description: AM - Asset Management
+    id: 72
     name: am_asset_management
     test_cases:
     - configuration:
         name: base_config
       description: AM-1 - Track asset inventory and their risks
+      id: 73
       name: am_1_track_asset_inventory_and_their_risks
     - configuration:
         name: base_config
       description: AM-2 - Use only approved services
+      id: 74
       name: am_2_use_only_approved_services
     - configuration:
         name: base_config
       description: AM-3 - Ensure security of asset lifecycle management
+      id: 75
       name: am_3_ensure_security_of_asset_lifecycle_management
     - configuration:
         name: base_config
       description: AM-4 - Limit access to asset management
+      id: 76
       name: am_4_limit_access_to_asset_management
     - configuration:
         name: base_config
       description: AM-5 - Use only approved applications in virtual machine
+      id: 77
       name: am_5_use_only_approved_applications_in_virtual_machine
-
-
   - description: LT - Logging and threat detection
+    id: 78
     name: lt_logging_and_threat_detection
     test_cases:
     - configuration:
         name: base_config
       description: LT-1 - Enable threat detection capabilities
+      id: 79
       name: lt_1_enable_threat_detection_capabilities
     - configuration:
         name: base_config
       description: LT-2 - Enable threat detection for  identity and access management
+      id: 80
       name: lt_2_enable_threat_detection_for_identity_and_access_management
     - configuration:
         name: base_config
       description: LT-3 - Enable logging for security investigation
+      id: 81
       name: lt_3_enable_logging_for_security_investigation
     - configuration:
         name: base_config
       description: LT-4 - Enable network logging for security investigation
+      id: 82
       name: lt_4_enable_network_logging_for_security_investigation
     - configuration:
         name: base_config
       description: LT-5 - Centralize security log management and analysis
+      id: 83
       name: lt_5_centralize_security_log_management_and_analysis
     - configuration:
         name: base_config
       description: LT-6 - Configure log storage retention
+      id: 84
       name: lt_6_configure_log_storage_retention
     - configuration:
         name: base_config
       description: LT-7 - Use approved time synchronization sources
+      id: 85
       name: lt_7_use_approved_time_synchronization_sources
-
   - description: IR - Incident Response
+    id: 86
     name: ir_incident_response
     test_cases:
     - configuration:
         name: base_config
-      description: IR-1 - Preparation - update incident response plan and handling process
+      description: IR-1 - Preparation - update incident response plan and handling
+        process
+      id: 87
       name: ir_1_preparation_update_incident_response_plan_and_handling_process
     - configuration:
         name: base_config
       description: IR-2 - Preparation - setup incident contact information
+      id: 88
       name: ir_2_preparation_setup_incident_contact_information
     - configuration:
         name: base_config
-      description: IR-3 - Detection and analysis - create incidents based on high-quality alerts
+      description: IR-3 - Detection and analysis - create incidents based on high-quality
+        alerts
+      id: 89
       name: ir_3_detection_and_analysis_create_incidents_based_on_high_quality_alerts
     - configuration:
         name: base_config
       description: IR-4 - Detection and analysis - investigate an incident
+      id: 90
       name: ir_4_detection_and_analysis_investigate_an_incident
     - configuration:
         name: base_config
       description: IR-5 - Detection and analysis - prioritize incidents
+      id: 91
       name: ir_5_detection_and_analysis_prioritize_incidents
     - configuration:
         name: base_config
-      description: IR-6 - Containment, eradication and recovery - automate the incident handling
+      description: IR-6 - Containment, eradication and recovery - automate the incident
+        handling
+      id: 92
       name: ir_6_containment_eradication_and_recovery_automate_the_incident_handling
     - configuration:
         name: base_config
-      description: IR-7 - Post-incident activity - conduct lesson learned and retain evidence
+      description: IR-7 - Post-incident activity - conduct lesson learned and retain
+        evidence
+      id: 93
       name: ir_7_post_incident_activity_conduct_lesson_learned_and_retain_evidence
-
   - description: PV - Posture and Vulnerability Management
+    id: 94
     name: pv_posture_and_vulnerability_management
     test_cases:
     - configuration:
         name: base_config
-      description: PV-1 - Define and establish secure configurations 
+      description: PV-1 - Define and establish secure configurations
+      id: 95
       name: pv_1_define_and_establish_secure_configurations
     - configuration:
         name: base_config
       description: PV-2 - Audit and enforce secure configurations
+      id: 96
       name: pv_2_audit_and_enforce_secure_configurations
     - configuration:
         name: base_config
       description: PV-3 - Define and establish secure configurations for compute resources
+      id: 97
       name: pv_3_define_and_establish_secure_configurations_for_compute_resources
     - configuration:
         name: base_config
       description: PV-4 - Audit and enforce secure configurations for compute resources
+      id: 98
       name: pv_4_audit_and_enforce_secure_configurations_for_compute_resources
     - configuration:
         name: base_config
       description: PV-5 - Perform vulnerability assessments
+      id: 99
       name: pv_5_perform_vulnerability_assessments
     - configuration:
         name: base_config
       description: PV-6 - Rapidly and automatically remediate vulnerabilities
+      id: 100
       name: pv_6_rapidly_and_automatically_remediate_vulnerabilities
     - configuration:
         name: base_config
       description: PV-7 - Conduct regular red team operations
+      id: 101
       name: pv_7_conduct_regular_red_team_operations
-
   - description: ES - Endpoint security
+    id: 102
     name: es_endpoint_security
     test_cases:
     - configuration:
         name: base_config
       description: ES-1 - Use Endpoint Detection and Response (EDR)
+      id: 103
       name: es_1_use_endpoint_detection_and_response_edr
     - configuration:
         name: base_config
       description: ES-2 - Use modern anti-malware software
+      id: 104
       name: es_2_use_modern_anti_malware_software
     - configuration:
         name: base_config
       description: ES-3 - Ensure anti-malware software and signatures are updated
+      id: 105
       name: es_3_ensure_anti_malware_software_and_signatures_are_updated
-
   - description: BR - Backup and recovery
+    id: 106
     name: br_backup_and_recovery
     test_cases:
     - configuration:
         name: base_config
       description: BR-1 - Ensure regular automated backups
+      id: 107
       name: br_1_ensure_regular_automated_backups
     - configuration:
         name: base_config
       description: BR-2 - Protect backup and recovery data
+      id: 108
       name: br_2_protect_backup_and_recovery_data
     - configuration:
         name: base_config
-      description: BR-3 - Monitor backups  
+      description: BR-3 - Monitor backups
+      id: 109
       name: br_3_monitor_backups
     - configuration:
         name: base_config
       description: BR-4 - Regularly test backup
+      id: 110
       name: br_4_regularly_test_backup
-
   - description: DS - DevOps Security
+    id: 111
     name: ds_devops_security
     test_cases:
     - configuration:
         name: base_config
       description: DS-1 - Conduct threat modeling
+      id: 112
       name: ds_1_conduct_threat_modeling
     - configuration:
         name: base_config
       description: DS-2 - Ensure software supply chain security
+      id: 113
       name: ds_2_ensure_software_supply_chain_security
     - configuration:
         name: base_config
       description: DS-3 - Secure DevOps infrastructure
+      id: 114
       name: ds_3_secure_devops_infrastructure
     - configuration:
         name: base_config
-      description: DS-4 - Integrate static application security testing into DevOps pipeline
+      description: DS-4 - Integrate static application security testing into DevOps
+        pipeline
+      id: 115
       name: ds_4_integrate_static_application_security_testing_into_devops_pipeline
     - configuration:
         name: base_config
-      description: DS-5 - Integrate dynamic application security testing into DevOps pipeline
+      description: DS-5 - Integrate dynamic application security testing into DevOps
+        pipeline
+      id: 116
       name: ds_5_integrate_dynamic_application_security_testing_into_devops_pipeline
     - configuration:
         name: base_config
       description: DS-6 - Enforce security of workload throughout DevOps lifecycle
+      id: 117
       name: ds_6_enforce_security_of_workload_throughout_devops_lifecycle
     - configuration:
         name: base_config
       description: DS-7 - Enable logging and monitoring in DevOps
+      id: 118
       name: ds_7_enable_logging_and_monitoring_in_devops
-
   - description: GS - Governance and Strategy
+    id: 119
     name: gs_governance_and_strategy
     test_cases:
     - configuration:
         name: base_config
       description: GS-1 - Align organization roles, responsibilities and accountabilities
+      id: 120
       name: gs_1_align_organization_roles_responsibilities_and_accountabilities
     - configuration:
         name: base_config
-      description: GS-2 - Define and implement enterprise segmentation/separation of duties strategy 
+      description: GS-2 - Define and implement enterprise segmentation/separation
+        of duties strategy
+      id: 121
       name: gs_2_define_and_implement_enterprise_segmentation_separation_of_duties_strategy
     - configuration:
         name: base_config
       description: GS-3 - Define and implement data protection strategy
+      id: 122
       name: gs_3_define_and_implement_data_protection_strategy
     - configuration:
         name: base_config
       description: GS-4 - Define and implement network security strategy
+      id: 123
       name: gs_4_define_and_implement_network_security_strategy
     - configuration:
         name: base_config
       description: GS-5 - Define and implement security posture management strategy
+      id: 124
       name: gs_5_define_and_implement_security_posture_management_strategy
     - configuration:
         name: base_config
       description: GS-6 - Define and implement identity and privileged access strategy
+      id: 125
       name: gs_6_define_and_implement_identity_and_privileged_access_strategy
     - configuration:
         name: base_config
-      description: GS-7 - Define and implement logging, threat detection and incident response strategy
+      description: GS-7 - Define and implement logging, threat detection and incident
+        response strategy
+      id: 126
       name: gs_7_define_and_implement_logging_threat_detection_and_incident_response_strategy
     - configuration:
         name: base_config
       description: GS-8 - Define and implement backup and recovery strategy
+      id: 127
       name: gs_8_define_and_implement_backup_and_recovery_strategy
     - configuration:
         name: base_config
       description: GS-9 - Define and implement endpoint security strategy
+      id: 128
       name: gs_9_define_and_implement_endpoint_security_strategy
     - configuration:
         name: base_config
       description: GS-10 - Define and implement DevOps security strategy
+      id: 129
       name: gs_10_define_and_implement_devops_security_strategy
     - configuration:
         name: base_config
       description: GS-11 - Define and implement multi-cloud security strategy
+      id: 130
       name: gs_11_define_and_implement_multi_cloud_security_strategy

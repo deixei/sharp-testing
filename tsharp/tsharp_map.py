@@ -4,6 +4,7 @@
 import os
 import yaml
 import argparse
+from tsharp_constants import EnvironmentVariables
 
 def parse_args():
     """
@@ -12,6 +13,8 @@ def parse_args():
     Returns:
         argparse.Namespace: The parsed command line arguments.
     """
+    EnvironmentVariables.subscription_id
+
     script_dir = os.path.dirname(os.path.realpath(__file__))
     parent_dir = os.path.join(script_dir, "..")
 

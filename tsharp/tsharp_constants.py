@@ -5,6 +5,7 @@ This module contains constants used in the tsharp module.
 - TARGET_ADO_PROJECT: The name of the Azure DevOps project.
 - VERBOSE: A flag indicating whether verbose logging is enabled.
 """
+import os
 
 TARGET_ADO_URL = "https://dev.azure.com/deixeicom" ## /{self.url}/
 TARGET_ADO_PROJECT = "deixei" ## /{self.project}/
@@ -28,7 +29,7 @@ ADO_ENV_MAPPING = dict(
     run_id='RUN_ID'
 )
 
-class EnviromentVariables:
+class EnvironmentVariables:
     def env_config(self, name, default=None) -> str:
         return os.environ.get(name, default)
 
