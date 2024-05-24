@@ -14,6 +14,7 @@ The current use case we are looking at is to represent the Azure CIS controls as
 - Azure
 - Python PyTest
 - YAML
+- Ubuntu (linux)
 
 
 
