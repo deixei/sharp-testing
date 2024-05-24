@@ -1,6 +1,12 @@
 # Sharp Testing Framework
 
-Sharpe Testing is an open source framework for defining test plans, test suites and test cases in YAML format. It also allows defining different configurations and configuration variables for testing. The framework integrates with Azure DevOps Testing hub by generating the required work items, and generates pytest files linked to the test cases. It takes advantage of the pytest framework and uploads the execution report.
+Sharp Testing is an open source framework for defining test plans, test suites and test cases in YAML format. It also allows defining different configurations and configuration variables for testing. The framework integrates with Azure DevOps Testing hub by generating the required work items, and generates pytest files linked to the test cases. It takes advantage of the pytest framework and uploads the execution report.
+
+This allows us to build audit or testing suites that includes the tracking items (ADO Test Cases) and the PyTest functions (with a helper framework) ready to execute on demand from the ADO Test Suite hub.
+
+The configuration part allows us to build a matrixes of configuration variables that in turn will be used to map test case execution, making the test case code more flexible.
+
+The current use case we are looking at is to represent the Azure CIS controls as test cases in order to build an auditing tool for our Azure Governance Strategy. Note that a test case and a audit case, are extremely similar, both use the concept of comparing an actual with an expected value.
 
 ## Installation
 
@@ -12,7 +18,7 @@ Clone me and adapt the CI pipeline
 
 CLI
 
-The helper command for Sharpe Testing is tsharp. You can use it to create a new test plan, test suite or test case:
+The helper command for Sharp Testing is tsharp. You can use it to create a new test plan, test suite or test case:
 
 python3 tsharp/tsharp.py
 
@@ -26,21 +32,21 @@ python3 tsharp/tsharp_map.py
 
 ## Azure DevOps Integration
 
-The Sharpe Testing framework integrates with Azure DevOps Testing hub. It generates the required work items for testing. You can use the tsharp_run runner in Azure DevOps to run tests.
+The Sharp Testing framework integrates with Azure DevOps Testing hub. It generates the required work items for testing. You can use the tsharp_run runner in Azure DevOps to run tests.
 
 ## YAML Configuration
 
-The Sharpe Testing framework allows defining test plans, test suites and test cases in YAML format. You can define different configurations and configuration variables for testing. Here is an example of a test plan YAML file:
+The Sharp Testing framework allows defining test plans, test suites and test cases in YAML format. You can define different configurations and configuration variables for testing. Here is an example of a test plan YAML file:
 
 ```yaml
 name: My Test Plan
 description: This is my test plan
-...
+  ...
 ```
 
 ## License
 
-Sharpe Testing is licensed under the MIT License. See the LICENSE file for more information.
+Sharp Testing is licensed under the MIT License. See the LICENSE file for more information.
 
 ## Introduction
 
@@ -74,6 +80,8 @@ pytest test_my_test_plan2/test_my_test_suite_2.py::test_my_test_case_3 --junitxm
 
 ### Build
 
+The build process creates a packaged version of the test cases (PyTest) and publish it as an consumable artifact from the Release pipeline.
+
 ```yaml
 trigger:
 - main
@@ -105,6 +113,10 @@ steps:
 ```
 
 ### Release
+
+This release it a placeholder for ADO test case automation, it allows to bind the test suite that was created to this release pipeline, allowing the user from the interface to execute selected test cases, pushing then for automatic execution.
+
+This is leveraging a feature from ADO, that was build to allow us to run .net test cases automatically, by making the VSTest@2 task enable but set the condition to false, makes ADO run the pipeline from the test case hub as normal, but we then go and catch the execution from Python, forcing it to run the selected test cases from our own tool 'python tsharp/tsharp_runner.py --verbose vvv'.
 
 ```yaml
 steps:
