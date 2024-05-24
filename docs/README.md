@@ -2,8 +2,9 @@
 
 TSharp solution documentation hub.
 
+## Commands
 
-There are 3 main commands available
+There are 3 main commands available:
 
 - tsharp: [more](tsharp.md)
 
@@ -11,6 +12,9 @@ There are 3 main commands available
 
 - tsharp_map: [more](tsharp_map.md)
 
+## PyTest
+
+- PyTestSharp: [more](PyTestSharp.md)
 
 ## Author
 
