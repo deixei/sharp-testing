@@ -1,5 +1,11 @@
 # TSharp map documentation
 
+The purpose of this tool is to load from Azure different targets, like subscriptions, regions, management groups, etc...
+
+Then set them as variables in ADO Test hub, with that setup, generate valid configurations matrix combining multiple variables.
+
+As your cloud setup grows so does the variables and configurations need to be updated. Having this tools executed regularly, makes it more easier to trust in audit situations. Remember that some variables like subscriptions can end up, with time, to contain invalid guids, as subscriptions are off boarded.
+
 ...
 
 ## Usage
