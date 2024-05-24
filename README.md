@@ -8,6 +8,14 @@ The configuration part allows us to build a matrixes of configuration variables 
 
 The current use case we are looking at is to represent the Azure CIS controls as test cases in order to build an auditing tool for our Azure Governance Strategy. Note that a test case and a audit case, are extremely similar, both use the concept of comparing an actual with an expected value.
 
+## Technologies
+
+- Azure DevOps
+- Azure
+- Python PyTest
+- YAML
+
+
 ## Installation
 
 You can install Sharp Testing using this repo:
