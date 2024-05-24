@@ -16,6 +16,7 @@ The current use case we are looking at is to represent the Azure CIS controls as
 - YAML
 
 
+
 ## Installation
 
 You can install Sharp Testing using this repo:
@@ -173,3 +174,13 @@ steps:
     AZURE_CLIENT_ID: $(AZURE_CLIENT_ID)
     AZURE_SECRET: $(AZURE_SECRET)
 ```
+
+
+
+
+
+## Author
+
+[Marcio Parente](https://github.com/deixei) from deixei.com
+
+To understand the overall context of this project read this book: [ENTERPRISE SOFTWARE DELIVERY: A ROADMAP FOR THE FUTURE](https://www.amazon.de/-/en/Marcio-Parente/dp/B0CXTJZJ2X/)
